@@ -11,7 +11,6 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -27,7 +26,6 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->id('admin')
             ->path('admin')
-            ->colors(['primary' => Color::Green])
             ->discoverResources(in: app_path('Filament/Panels/Admin/Resources'), for: 'App\\Filament\\Panels\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Panels/Admin/Pages'), for: 'App\\Filament\\Panels\\Admin\\Pages')
             ->discoverWidgets(in: app_path('Filament/Panels/Admin/Widgets'), for: 'App\\Filament\\Panels\\Admin\\Widgets')

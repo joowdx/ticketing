@@ -27,7 +27,6 @@ class SupportPanelProvider extends PanelProvider
         return $panel
             ->id('support')
             ->path('support')
-            ->colors(['primary' => Color::Green])
             ->discoverResources(in: app_path('Filament/Panels/Support/Resources'), for: 'App\\Filament\\Panels\\Support\\Resources')
             ->discoverPages(in: app_path('Filament/Panels/Support/Pages'), for: 'App\\Filament\\Panels\\Support\\Pages')
             ->discoverWidgets(in: app_path('Filament/Panels/Support/Widgets'), for: 'App\\Filament\\Panels\\Support\\Widgets')

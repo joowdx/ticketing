@@ -27,7 +27,6 @@ class OfficerPanelProvider extends PanelProvider
         return $panel
             ->id('officer')
             ->path('officer')
-            ->colors(['primary' => Color::Green])
             ->discoverResources(in: app_path('Filament/Panels/Officer/Resources'), for: 'App\\Filament\\Panels\\Officer\\Resources')
             ->discoverPages(in: app_path('Filament/Panels/Officer/Pages'), for: 'App\\Filament\\Panels\\Officer\\Pages')
             ->discoverWidgets(in: app_path('Filament/Panels/Officer/Widgets'), for: 'App\\Filament\\Panels\\Officer\\Widgets')

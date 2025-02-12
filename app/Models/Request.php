@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\RequestClassification;
 use App\Enums\RequestStatus;
 use App\Models\Concerns\HasManyAttachmentsThroughActions;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,15 +20,21 @@ class Request extends Model
     use HasManyAttachmentsThroughActions, HasUlids, SoftDeletes;
 
     protected $fillable = [
+        'classification',
         'subject',
+        'body',
+        'priority',
+        'difficulty',
+        'availability',
         'office_id',
         'category_id',
         'subcategory_id',
         'requestor_id',
-        'remarks',
-        'priority',
-        'difficulty',
-        'availability',
+    ];
+
+    protected $casts = [
+        'classification' => RequestClassification::class,
+        'availability' => 'datetime',
     ];
 
     public static function booted(): void

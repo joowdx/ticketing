@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('requests', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->string('subject');
+            $table->text('body')->nullable();
+            $table->smallInteger('priority')->nullable();
+            $table->smallInteger('difficulty')->nullable();
+            $table->datetime('availability')->nullable();
             $table->foreignUlid('office_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
             $table->foreignUlid('category_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
             $table->foreignUlid('subcategory_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
             $table->foreignUlid('user_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
-            $table->text('remarks')->nullable();
-            $table->smallInteger('priority')->nullable();
-            $table->smallInteger('difficulty')->nullable();
-            $table->datetime('availability')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

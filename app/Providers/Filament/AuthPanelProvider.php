@@ -33,7 +33,6 @@ class AuthPanelProvider extends PanelProvider
             ->login(Login::class)
             ->registration(Registration::class)
             ->revealablePasswords(false)
-            ->colors(['primary' => Color::Green])
             ->discoverPages(in: app_path('Filament/Panels/Auth/Pages'), for: 'App\\Filament\\Panels\\Auth\\Pages')
             ->pages([Redirect::class])
             ->middleware([

@@ -53,6 +53,7 @@ class UserPanelProvider extends PanelProvider
                 Verify::class,
                 Approve::class,
                 Active::class,
-            ]);
+            ])
+            ->topNavigation();
     }
 }
