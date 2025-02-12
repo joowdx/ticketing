@@ -2,21 +2,20 @@
 
 namespace App\Providers;
 
-use App\Http\Responses\LogoutResponse;
-use App\Models\Token;
 use Filament\Forms\Components\Select;
-use Filament\Http\Responses\Auth\Contracts\LogoutResponse as ContractsLogoutResponse;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Livewire\Notifications;
-use Filament\Support\Assets\Css;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\VerticalAlignment;
-use Filament\Support\Facades\FilamentAsset;
+use Filament\Support\Facades\FilamentView;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Vite;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,8 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(ContractsLogoutResponse::class, LogoutResponse::class);
-
+        //
     }
 
     /**
@@ -34,22 +32,54 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Sanctum::usePersonalAccessTokenModel(Token::class);
+        if ($this->app->environment('local') && class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
+            $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
+        }
 
-        FilamentAsset::register([Css::make('app', Vite::asset('resources/css/app.css'))]);
-
-        Select::configureUsing(fn (Select $select) => $select->native(false));
-
-        Table::configureUsing(fn (Table $table) => $table->paginated([10, 25, 50, 100])->defaultPaginationPageOption(25)->striped());
-
-        SelectFilter::configureUsing(fn (SelectFilter $filter) => $filter->native(false));
+        FilamentView::registerRenderHook(PanelsRenderHook::HEAD_START, fn () => Blade::render('@vite(\'resources/css/app.css\')'));
 
         Notifications::verticalAlignment(VerticalAlignment::End);
 
         Notifications::alignment(Alignment::Start);
 
-        if (config('app.env') === 'prod') {
-            URL::forceScheme('https');
-        }
+        Table::configureUsing(function (Table $table) {
+            $table->paginated([5, 10, 15, 20, 25, 50, 100])
+                ->defaultPaginationPageOption(20)
+                ->recordClasses(function (Model $model) {
+                    if (in_array(SoftDeletes::class, class_uses_recursive($model))) {
+                        return $model->trashed() ? 'bg-gray-100 dark:bg-gray-800' : null;
+                    }
+                });
+        });
+
+        TextInput::configureUsing(fn (TextInput $input) => $input->maxLength(255));
+
+        Select::configureUsing(fn (Select $select) => $select->native(false));
+
+        SelectFilter::configureUsing(fn (SelectFilter $filter) => $filter->native(false));
+
+        TrashedFilter::configureUsing(fn (TrashedFilter $filter) => $filter->native(false));
+
+        \Filament\Actions\ForceDeleteAction::configureUsing(function (\Filament\Actions\ForceDeleteAction $action) {
+            $action->form([
+                TextInput::make('password')
+                    ->password()
+                    ->rule('required')
+                    ->markAsRequired()
+                    ->currentPassword()
+                    ->helperText('Enter your password to confirm.'),
+            ]);
+        });
+
+        \Filament\Tables\Actions\ForceDeleteAction::configureUsing(function (\Filament\Tables\Actions\ForceDeleteAction $action) {
+            $action->form([
+                TextInput::make('password')
+                    ->password()
+                    ->rule('required')
+                    ->markAsRequired()
+                    ->currentPassword()
+                    ->helperText('Enter your password to confirm.'),
+            ]);
+        });
     }
 }

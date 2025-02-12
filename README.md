@@ -75,7 +75,7 @@ User {
     ulid id pk
     string number
     string email
-    string position
+    string designation
     string role
     string avatar
     ulid office_id fk
@@ -111,17 +111,14 @@ Tag {
 
 Request {
     ulid id pk
+    string subject
     ulid category_id fk
     ulid subcategory_id fk
-    ulid requestor_id fk
-    string subject
+    ulid user_id fk
     text remarks
     int priority
     int difficulty
-    date target_date
-    time target_time
-    datetime availability_from
-    datetime availability_to
+    datetime availability
 }
 
 Action {

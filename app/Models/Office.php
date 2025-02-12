@@ -2,24 +2,31 @@
 
 namespace App\Models;
 
+use App\Filament\AvatarProviders\UiAvatarsProvider;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Office extends Model
 {
-    use HasFactory, HasUlids;
+    use HasUlids, SoftDeletes;
 
     protected $fillable = [
         'name',
-        'acronym',
+        'code',
         'address',
         'building',
         'room',
         'logo',
     ];
+
+    public function logoUrl(): Attribute
+    {
+        return Attribute::make(fn () => $this->logo ?? (new UiAvatarsProvider)->get($this));
+    }
 
     public function users(): HasMany
     {

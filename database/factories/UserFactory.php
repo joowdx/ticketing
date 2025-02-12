@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
@@ -16,8 +16,6 @@ class UserFactory extends Factory
      */
     protected static ?string $password;
 
-    protected $model = User::class;
-
     /**
      * Define the model's default state.
      *
@@ -25,18 +23,30 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        $roles = ['admin', 'user', 'support', 'officer'];
-        $positions = ['PGO-Executivew', 'SP-Legislation', 'SP-Secretariat', 'PGO-Administrative', 'Executive', 'Administrator', 'Chairman'];
-
         return [
-            'name' => $this->faker->unique()->name,
-            'email' => $this->faker->unique()->safeEmail(),
-            'password' => bcrypt(value: 'password'),
-            'role' => $this->faker->randomElement($roles),
-            'number' => $this->faker->phoneNumber(),
-            'email_verified_at' => now(),
+            'name' => fake()->name(),
+            'email' => fake()->unique()->safeEmail(),
+            'verified_at' => now(),
+            'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'position' => $this->faker->randomElement($positions),
+            'verified_at' => $verified = fake()->boolean(60) ? now() : null,
+            'approved_at' => $verified ? (fake()->boolean(60) ? $verified : null) : null,
         ];
+    }
+
+    /**
+     * Default superuser user account.
+     */
+    public function superuser(): static
+    {
+        return $this->state(fn () => [
+            'name' => 'Superuser',
+            'email' => 'superuser@local.dev',
+            'role' => 'admin',
+            'verified_at' => 1,
+            'approved_at' => 1,
+            'password' => '$2y$12$.jM7SD37qQAvDhmCHz414uToHIWwl9129xyMTgbDXlT8/KvKfXxU.',
+            'remember_token' => null,
+        ]);
     }
 }

@@ -11,6 +11,8 @@ class Label extends Pivot
 {
     use HasFactory, HasUlids;
 
+    protected $table = 'labels';
+
     protected $fillable = [
         'request_id',
         'tag_id',

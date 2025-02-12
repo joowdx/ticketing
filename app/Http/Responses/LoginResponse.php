@@ -10,17 +10,21 @@ use Livewire\Features\SupportRedirects\Redirector;
 
 class LoginResponse implements Responsable
 {
-    protected User $user;
-
     public function toResponse($request): RedirectResponse|Redirector
     {
-        $this->user = $request->user();
+        /** @var User $user */
+        $user = $request->user();
 
-        $route = match ($this->user->role) {
-            UserRole::ADMIN => 'filament.admin.resources.requests.index',
-            UserRole::USER => 'filament.user.resources.requests.index',
-            UserRole::OFFICER => 'filament.officer.resources.requests.index',
-            UserRole::SUPPORT => 'filament.support.resources.requests.index',
+        if (! $user->hasVerifiedEmail()) {
+            return redirect()->route('filament.auth.auth.email-verification.prompt');
+        }
+
+        $route = match ($user->role) {
+            UserRole::ADMIN => 'filament.admin.pages.dashboard',
+            // UserRole::USER => 'filament.user.pages.dashboard',
+            // UserRole::OFFICER => 'filament.officer.pages.dashboard',
+            // UserRole::SUPPORT => 'filament.support.pages.dashboard',
+            default => 'home',
         };
 
         return redirect()->route($route);

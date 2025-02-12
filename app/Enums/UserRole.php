@@ -7,12 +7,12 @@ use Filament\Support\Contracts\HasLabel;
 enum UserRole: string implements HasLabel
 {
     case ADMIN = 'admin';
-    case USER = 'user';
     case OFFICER = 'officer';
     case SUPPORT = 'support';
+    case USER = 'user';
 
     public function getLabel(): ?string
     {
-        return ucfirst($this->value);
+        return mb_ucfirst($this->value);
     }
 }

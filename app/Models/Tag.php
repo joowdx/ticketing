@@ -4,15 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Tag extends Model
 {
-    use HasFactory, HasUlids;
+    use HasUlids;
 
     protected $fillable = [
         'name',
@@ -20,9 +18,12 @@ class Tag extends Model
         'taggable_id',
     ];
 
-    public function subcategory(): MorphToMany
+    public function name(): Attribute
     {
-        return $this->morhpedByMany(Subcategory::class, 'taggable');
+        return Attribute::make(
+            fn (string $name) => preg_replace('/\s+/', ' ', mb_strtolower(trim($name))),
+            fn (string $name) => preg_replace('/\s+/', ' ', mb_strtolower(trim($name))),
+        );
     }
 
     public function category(): MorphToMany
@@ -30,23 +31,13 @@ class Tag extends Model
         return $this->morphedByMany(Category::class, 'taggable');
     }
 
-    public function requests(): BelongsToMany
+    public function subcategory(): MorphToMany
     {
-        return $this->belongsToMany(Request::class, 'labels')
-            ->using(Label::class)
-            ->orderBy('tags.name');
+        return $this->morhpedByMany(Subcategory::class, 'taggable');
     }
 
     public function taggable(): MorphTo
     {
         return $this->morphTo();
-    }
-
-    public function name(): Attribute
-    {
-        return Attribute::make(
-            fn (string $name) => preg_replace('/\s+/', ' ', mb_strtolower(trim($name))),
-            fn (string $name) => preg_replace('/\s+/', ' ', mb_strtolower(trim($name))),
-        );
     }
 }
