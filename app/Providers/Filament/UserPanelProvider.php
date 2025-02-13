@@ -28,7 +28,7 @@ class UserPanelProvider extends PanelProvider
         return $panel
             ->id('user')
             ->path('user')
-            ->colors(['primary' => Color::Green])
+            ->colors(['secondary' => Color::Green])
             ->discoverResources(in: app_path('Filament/Panels/User/Resources'), for: 'App\\Filament\\Panels\\User\\Resources')
             ->discoverPages(in: app_path('Filament/Panels/User/Pages'), for: 'App\\Filament\\Panels\\User\\Pages')
             ->discoverWidgets(in: app_path('Filament/Panels/User/Widgets'), for: 'App\\Filament\\Panels\\User\\Widgets')
@@ -54,6 +54,7 @@ class UserPanelProvider extends PanelProvider
                 Approve::class,
                 Active::class,
             ])
-            ->topNavigation();
+            ->topNavigation()
+            ->spa();
     }
 }

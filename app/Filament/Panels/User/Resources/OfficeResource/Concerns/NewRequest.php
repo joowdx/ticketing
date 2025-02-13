@@ -1,0 +1,168 @@
+<?php
+
+namespace App\Filament\Panels\User\Resources\OfficeResource\Concerns;
+
+use App\Enums\RequestClassification;
+use App\Enums\RequestStatus;
+use App\Filament\Panels\User\Resources\RequestResource;
+use App\Models\Request;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Forms\Components\Group;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Support\Facades\FilamentView;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+
+use function Filament\Support\is_app_url;
+
+trait NewRequest
+{
+    public function mount(int|string $record): void
+    {
+        $this->record = $this->resolveRecord($record);
+
+        $this->authorizeAccess();
+
+        $this->fillForm();
+
+        $this->previousUrl = RequestResource::getUrl('index');
+    }
+
+    public function getHeaderActions(): array
+    {
+        $classification = str(class_basename(static::class))->replace('New', '')->toString();
+
+        return [
+            ActionGroup::make([])
+                ->button()
+                ->icon('heroicon-o-arrow-path')
+                ->label('Switch request')
+                ->actions([
+                    Action::make('Switch to Inquiry')
+                        ->icon(RequestClassification::tryFrom('inquiry')->getIcon())
+                        ->url(fn () => static::getResource()::getUrl('new.inquiry', [$this->record->id]))
+                        ->hidden($classification === 'Inquiry'),
+                    Action::make('Switch to Suggestion')
+                        ->icon(RequestClassification::tryFrom('suggestion')->getIcon())
+                        ->url(fn () => static::getResource()::getUrl('new.suggestion', [$this->record->id]))
+                        ->hidden($classification === 'Suggestion'),
+                    Action::make('Switch to Ticket')
+                        ->icon(RequestClassification::tryFrom('ticket')->getIcon())
+                        ->url(fn () => static::getResource()::getUrl('new.ticket', [$this->record->id]))
+                        ->hidden($classification === 'Ticket'),
+                ]),
+        ];
+    }
+
+    public function getHeading(): string|Htmlable
+    {
+        $classification = static::getClassification();
+
+        $heading = <<<HTML
+            <span class="text-custom-600 dark:text-custom-400" style="--c-400:var(--danger-400);--c-600:var(--danger-600);">
+                New $classification->value
+            </span>
+            request for
+            <span class="text-custom-600 dark:text-custom-400" style="--c-400:var(--primary-400);--c-600:var(--primary-600);">
+                {$this->record->code}
+            </span>
+        HTML;
+
+        return str($heading)->toHtmlString();
+    }
+
+    public function form(Form $form): Form
+    {
+        $classification = static::getClassification();
+
+        $subcategories = $this->record->subcategories
+            ->load('category')
+            ->groupBy('category.name')
+            ->mapWithKeys(fn ($subs, $cat) => [
+                $cat => $subs->pluck('name', 'id')
+                    ->map(fn ($sub) => $cat !== $sub ? "$cat — $sub" : $sub)
+                    ->toArray(),
+            ]);
+
+        return $form->columns(5)
+            ->model(Request::class)
+            ->schema([
+                Group::make()
+                    ->columnSpan(4)
+                    ->schema([
+                        Select::make('category')
+                            ->options($subcategories)
+                            ->required()
+                            ->placeholder(null)
+                            ->helperText(fn () => 'Choose the most relevant category for '.match ($classification) {
+                                RequestClassification::INQUIRY => 'your question or request for information.',
+                                RequestClassification::SUGGESTION => 'your idea or feedback.',
+                                RequestClassification::TICKET => 'the issue you are reporting.',
+                            }),
+                        TextInput::make('subject')
+                            ->rule('required')
+                            ->markAsRequired()
+                            ->helperText(fn () => 'Be clear and concise about '.match ($classification) {
+                                RequestClassification::TICKET => 'the issue you are facing.',
+                                RequestClassification::SUGGESTION => 'the idea or suggestion you would like to share.',
+                                RequestClassification::INQUIRY => 'the question you have.',
+                            }),
+                        MarkdownEditor::make('body')
+                            ->required()
+                            ->helperText(fn () => 'Provide detailed information about '.match ($classification) {
+                                RequestClassification::INQUIRY => 'your question, specifying any necessary context for clarity.',
+                                RequestClassification::SUGGESTION => 'your idea, explaining its benefits and potential impact.',
+                                RequestClassification::TICKET => 'the issue, including any steps to reproduce it and relevant details.',
+                            }),
+                    ]),
+            ]);
+    }
+
+    protected static function getClassification(): RequestClassification
+    {
+        return static::$classification ?? throw new \RuntimeException('Classification not set.');
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        return ['classification' => static::$classification ?? null, ...$data];
+    }
+
+    protected function handleRecordUpdate(Model $record, array $data): Model
+    {
+        $subcategory = $record->subcategories->find($data['category']);
+
+        $category = $subcategory->category;
+
+        abort_if(! $record->exists || ! $subcategory?->exists || ! $category?->exists, 404);
+
+        $request = Request::make($data);
+
+        $request->office()->associate($record);
+
+        $request->category()->associate($category);
+
+        $request->subcategory()->associate($subcategory);
+
+        $request->save();
+
+        $request->actions()->create(['user_id' => Auth::id(), 'status' => RequestStatus::PUBLISHED]);
+
+        return $request;
+    }
+
+    protected function getCancelFormAction(): Action
+    {
+        $url = RequestResource::getUrl();
+
+        return Action::make('cancel')
+            ->label(__('filament-panels::resources/pages/edit-record.form.actions.cancel.label'))
+            ->action(fn () => $this->redirect($url, navigate: FilamentView::hasSpaMode() && is_app_url($url)))
+            ->color('gray');
+    }
+}

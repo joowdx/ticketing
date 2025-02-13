@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('requests', function (Blueprint $table) {
             $table->ulid('id')->primary();
+            $table->string('classification');
             $table->string('subject');
             $table->text('body')->nullable();
             $table->smallInteger('priority')->nullable();
