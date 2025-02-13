@@ -3,11 +3,11 @@
 namespace App\Filament\Panels\Admin\Clusters\Resources;
 
 use App\Enums\UserRole;
+use App\Filament\Filters\OfficeFilter;
 use App\Filament\Panels\Admin\Actions\Tables\ApproveAccountAction;
 use App\Filament\Panels\Admin\Actions\Tables\ApproveAccountBulkAction;
 use App\Filament\Panels\Admin\Actions\Tables\DeactivateAccessAction;
 use App\Filament\Panels\Admin\Clusters\Organization;
-use App\Filament\Panels\Admin\Clusters\Resources\UserResource\Filters\OfficeFilter;
 use App\Filament\Panels\Admin\Clusters\Resources\UserResource\Filters\RoleFilter;
 use App\Filament\Panels\Admin\Clusters\Resources\UserResource\Pages;
 use App\Models\User;

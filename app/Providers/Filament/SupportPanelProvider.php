@@ -11,7 +11,6 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -27,6 +26,7 @@ class SupportPanelProvider extends PanelProvider
         return $panel
             ->id('support')
             ->path('support')
+            ->font('Figtree')
             ->discoverResources(in: app_path('Filament/Panels/Support/Resources'), for: 'App\\Filament\\Panels\\Support\\Resources')
             ->discoverPages(in: app_path('Filament/Panels/Support/Pages'), for: 'App\\Filament\\Panels\\Support\\Pages')
             ->discoverWidgets(in: app_path('Filament/Panels/Support/Widgets'), for: 'App\\Filament\\Panels\\Support\\Widgets')
@@ -50,6 +50,8 @@ class SupportPanelProvider extends PanelProvider
                 Authenticate::class,
                 Verify::class,
                 Approve::class,
-            ]);
+            ])
+            ->topNavigation()
+            ->spa();
     }
 }

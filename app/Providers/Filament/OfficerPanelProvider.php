@@ -11,7 +11,6 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -27,6 +26,7 @@ class OfficerPanelProvider extends PanelProvider
         return $panel
             ->id('officer')
             ->path('officer')
+            ->font('Figtree')
             ->discoverResources(in: app_path('Filament/Panels/Officer/Resources'), for: 'App\\Filament\\Panels\\Officer\\Resources')
             ->discoverPages(in: app_path('Filament/Panels/Officer/Pages'), for: 'App\\Filament\\Panels\\Officer\\Pages')
             ->discoverWidgets(in: app_path('Filament/Panels/Officer/Widgets'), for: 'App\\Filament\\Panels\\Officer\\Widgets')
@@ -50,6 +50,8 @@ class OfficerPanelProvider extends PanelProvider
                 Authenticate::class,
                 Verify::class,
                 Approve::class,
-            ]);
+            ])
+            ->topNavigation()
+            ->spa();
     }
 }

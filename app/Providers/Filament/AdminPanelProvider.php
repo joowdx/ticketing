@@ -26,6 +26,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->id('admin')
             ->path('admin')
+            ->font('Figtree')
             ->discoverResources(in: app_path('Filament/Panels/Admin/Resources'), for: 'App\\Filament\\Panels\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Panels/Admin/Pages'), for: 'App\\Filament\\Panels\\Admin\\Pages')
             ->discoverWidgets(in: app_path('Filament/Panels/Admin/Widgets'), for: 'App\\Filament\\Panels\\Admin\\Widgets')
@@ -51,6 +52,7 @@ class AdminPanelProvider extends PanelProvider
                 Verify::class,
                 Approve::class,
             ])
-            ->topNavigation();
+            ->topNavigation()
+            ->spa();
     }
 }

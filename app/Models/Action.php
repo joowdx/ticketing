@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\RequestStatus;
+use App\Enums\ActionStatus;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,7 +21,7 @@ class Action extends Model
     ];
 
     protected $casts = [
-        'status' => RequestStatus::class,
+        'status' => ActionStatus::class,
     ];
 
     public function attachment(): MorphOne

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ActionStatus;
 use App\Enums\RequestClassification;
-use App\Enums\RequestStatus;
 use App\Models\Concerns\HasManyAttachmentsThroughActions;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -20,7 +20,7 @@ class Request extends Model
     use HasManyAttachmentsThroughActions, HasUlids, SoftDeletes;
 
     protected $fillable = [
-        'classification',
+        'class',
         'subject',
         'body',
         'priority',
@@ -33,13 +33,13 @@ class Request extends Model
     ];
 
     protected $casts = [
-        'classification' => RequestClassification::class,
+        'class' => RequestClassification::class,
         'availability' => 'datetime',
     ];
 
     public static function booted(): void
     {
-        static::deleting(fn (self $request) => $request->purge());
+        static::forceDeleting(fn (self $request) => $request->purge());
 
         static::saving(function (self $request) {
             $request->tags()->sync(
@@ -66,18 +66,18 @@ class Request extends Model
         return $this->hasOne(Action::class)
             ->ofMany(['id' => 'max'], function ($query) {
                 $query->whereIn('status', [
-                    RequestStatus::APPROVED,
-                    RequestStatus::DECLINED,
-                    RequestStatus::PUBLISHED,
-                    RequestStatus::CANCELLED,
-                    RequestStatus::STARTED,
-                    RequestStatus::SUSPENDED,
-                    RequestStatus::RETRACTED,
-                    RequestStatus::COMPLIED,
-                    RequestStatus::COMPLETED,
-                    RequestStatus::RESOLVED,
-                    RequestStatus::VERIFIED,
-                    RequestStatus::DENIED,
+                    ActionStatus::APPROVED,
+                    ActionStatus::DECLINED,
+                    ActionStatus::PUBLISHED,
+                    ActionStatus::CANCELLED,
+                    ActionStatus::STARTED,
+                    ActionStatus::SUSPENDED,
+                    ActionStatus::RETRACTED,
+                    ActionStatus::COMPLIED,
+                    ActionStatus::COMPLETED,
+                    ActionStatus::RESOLVED,
+                    ActionStatus::VERIFIED,
+                    ActionStatus::DENIED,
                 ]);
             });
     }

@@ -2,15 +2,25 @@
 
 namespace App\Enums;
 
+use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasDescription;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
-enum RequestClassification: string implements HasDescription, HasIcon, HasLabel
+enum RequestClassification: string implements HasColor, HasDescription, HasIcon, HasLabel
 {
     case INQUIRY = 'inquiry';
     case TICKET = 'ticket';
     case SUGGESTION = 'suggestion';
+
+    public function getColor(): string|array|null
+    {
+        return match ($this) {
+            self::INQUIRY => 'success',
+            self::TICKET => 'warning',
+            self::SUGGESTION => 'info',
+        };
+    }
 
     public function getDescription(): ?string
     {

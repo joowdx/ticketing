@@ -1,14 +1,17 @@
 <?php
 
-namespace App\Filament\Panels\Admin\Clusters\Resources\UserResource\Filters;
+namespace App\Filament\Filters;
 
 use App\Models\Office;
+use App\Models\User;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 
 class OfficeFilter extends Filter
 {
+    protected string $model = User::class;
+
     public static function make(?string $name = null): static
     {
         $filterClass = static::class;
@@ -26,13 +29,19 @@ class OfficeFilter extends Filter
     {
         parent::setUp();
 
-        $this->form([
-            Select::make('office')
-                ->label('Affiliated office')
-                ->options([-1 => 'Unaffiliated', ...Office::query()->pluck('code', 'id')->toArray()])
-                ->placeholder('With unaffiliated office')
-                ->searchable(),
-        ]);
+        $this->form(function () {
+            $user = $this->model === User::class;
+
+            $offices = Office::query()->pluck('code', 'id')->toArray();
+
+            return [
+                Select::make('office')
+                    ->label($user ? 'Affiliated office' : 'Office')
+                    ->options($user ? [-1 => 'Unaffiliated', ...$offices] : $offices)
+                    ->placeholder($user ? 'With unaffiliated office' : 'Select an office')
+                    ->searchable(),
+            ];
+        });
 
         $this->query(function (Builder $query, array $data) {
             switch (is_array($data['office'])) {
@@ -49,7 +58,6 @@ class OfficeFilter extends Filter
                     $query->when($office, fn ($query, $office) => $query->where('office_id', $office !== -1 ? $office : null));
 
                     break;
-
             }
         });
 
@@ -68,5 +76,12 @@ class OfficeFilter extends Filter
 
             return 'Office: '.$offices->join(', ', ', & ');
         });
+    }
+
+    public function setModel(string $model): static
+    {
+        $this->model = $model;
+
+        return $this;
     }
 }
