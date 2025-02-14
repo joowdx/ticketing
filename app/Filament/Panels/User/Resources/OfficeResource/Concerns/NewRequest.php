@@ -3,18 +3,16 @@
 namespace App\Filament\Panels\User\Resources\OfficeResource\Concerns;
 
 use App\Enums\ActionStatus;
-use App\Enums\RequestClassification;
+use App\Enums\RequestClass;
 use App\Filament\Panels\User\Resources\RequestResource;
 use App\Models\Request;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Forms\Components\Actions\Action as FormAction;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Support\Facades\FilamentView;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
@@ -46,15 +44,15 @@ trait NewRequest
                 ->label('Switch request')
                 ->actions([
                     Action::make('Switch to Inquiry')
-                        ->icon(RequestClassification::tryFrom('inquiry')->getIcon())
+                        ->icon(RequestClass::tryFrom('inquiry')->getIcon())
                         ->url(fn () => static::getResource()::getUrl('new.inquiry', [$this->record->id]))
                         ->hidden($classification === 'Inquiry'),
                     Action::make('Switch to Suggestion')
-                        ->icon(RequestClassification::tryFrom('suggestion')->getIcon())
+                        ->icon(RequestClass::tryFrom('suggestion')->getIcon())
                         ->url(fn () => static::getResource()::getUrl('new.suggestion', [$this->record->id]))
                         ->hidden($classification === 'Suggestion'),
                     Action::make('Switch to Ticket')
-                        ->icon(RequestClassification::tryFrom('ticket')->getIcon())
+                        ->icon(RequestClass::tryFrom('ticket')->getIcon())
                         ->url(fn () => static::getResource()::getUrl('new.ticket', [$this->record->id]))
                         ->hidden($classification === 'Ticket'),
                 ]),
@@ -102,9 +100,9 @@ trait NewRequest
                             ->required()
                             ->placeholder(null)
                             ->helperText(fn () => 'Choose the most relevant category for '.match ($classification) {
-                                RequestClassification::INQUIRY => 'your question or request for information.',
-                                RequestClassification::SUGGESTION => 'your idea or feedback.',
-                                RequestClassification::TICKET => 'the issue you are reporting.',
+                                RequestClass::INQUIRY => 'your question or request for information.',
+                                RequestClass::SUGGESTION => 'your idea or feedback.',
+                                RequestClass::TICKET => 'the issue you are reporting.',
                             }),
                         TextInput::make('subject')
                             ->rule('required')
@@ -114,22 +112,22 @@ trait NewRequest
                                 'x-on:input' => 'event.target.value = event.target.value.charAt(0).toUpperCase() + event.target.value.slice(1)',
                             ])
                             ->helperText(fn () => 'Be clear and concise about '.match ($classification) {
-                                RequestClassification::TICKET => 'the issue you are facing.',
-                                RequestClassification::SUGGESTION => 'the idea or suggestion you would like to share.',
-                                RequestClassification::INQUIRY => 'the question you have.',
+                                RequestClass::TICKET => 'the issue you are facing.',
+                                RequestClass::SUGGESTION => 'the idea or suggestion you would like to share.',
+                                RequestClass::INQUIRY => 'the question you have.',
                             }),
                         MarkdownEditor::make('body')
                             ->required()
                             ->helperText(fn () => 'Provide detailed information about '.match ($classification) {
-                                RequestClassification::INQUIRY => 'your question, specifying any necessary context for clarity.',
-                                RequestClassification::SUGGESTION => 'your idea, explaining its benefits and potential impact.',
-                                RequestClassification::TICKET => 'the issue, including any steps to reproduce it and relevant details.',
+                                RequestClass::INQUIRY => 'your question, specifying any necessary context for clarity.',
+                                RequestClass::SUGGESTION => 'your idea, explaining its benefits and potential impact.',
+                                RequestClass::TICKET => 'the issue, including any steps to reproduce it and relevant details.',
                             }),
                     ]),
             ]);
     }
 
-    protected static function getClassification(): RequestClassification
+    protected static function getClassification(): RequestClass
     {
         return static::$classification ?? throw new \RuntimeException('Classification not set.');
     }
@@ -157,7 +155,7 @@ trait NewRequest
 
         $request->save();
 
-        $request->actions()->create(['user_id' => Auth::id(), 'status' => ActionStatus::PUBLISHED]);
+        $request->actions()->create(['user_id' => Auth::id(), 'status' => ActionStatus::SUBMITTED]);
 
         return $request;
     }

@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ActionStatus;
-use App\Enums\RequestClassification;
+use App\Enums\RequestClass;
 use App\Models\Concerns\HasManyAttachmentsThroughActions;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -29,11 +29,11 @@ class Request extends Model
         'office_id',
         'category_id',
         'subcategory_id',
-        'requestor_id',
+        'user_id',
     ];
 
     protected $casts = [
-        'class' => RequestClassification::class,
+        'class' => RequestClass::class,
         'availability' => 'datetime',
     ];
 
@@ -68,7 +68,7 @@ class Request extends Model
                 $query->whereIn('status', [
                     ActionStatus::APPROVED,
                     ActionStatus::DECLINED,
-                    ActionStatus::PUBLISHED,
+                    ActionStatus::SUBMITTED,
                     ActionStatus::CANCELLED,
                     ActionStatus::STARTED,
                     ActionStatus::SUSPENDED,
@@ -84,7 +84,8 @@ class Request extends Model
 
     public function actions(): HasMany
     {
-        return $this->hasMany(Action::class);
+        return $this->hasMany(Action::class)
+            ->orderBy('created_at', 'desc');
     }
 
     public function category(): BelongsTo
@@ -92,7 +93,7 @@ class Request extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function requestor(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

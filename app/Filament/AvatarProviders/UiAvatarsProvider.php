@@ -18,7 +18,7 @@ class UiAvatarsProvider extends \Filament\AvatarProviders\UiAvatarsProvider
             ->map(fn (string $segment): string => filled($segment) ? mb_substr($segment, 0, 1) : '')
             ->join(' ');
 
-        $backgroundColor = Rgb::fromString('rgb('.FilamentColor::getColors()['primary'][600].')')->toHex();
+        $backgroundColor = Rgb::fromString('rgb('.FilamentColor::getColors()['primary'][500].')')->toHex();
 
         return 'https://ui-avatars.com/api/?name='.urlencode($name).'&color=FFFFFF&background='.str($backgroundColor)->after('#');
     }

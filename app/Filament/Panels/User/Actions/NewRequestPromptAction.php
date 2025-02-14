@@ -2,7 +2,7 @@
 
 namespace App\Filament\Panels\User\Actions;
 
-use App\Enums\RequestClassification;
+use App\Enums\RequestClass;
 use App\Filament\Panels\User\Resources\OfficeResource;
 use App\Models\Office;
 use Filament\Actions\Action;
@@ -47,7 +47,7 @@ class NewRequestPromptAction extends Action
                     ->default(count($offices) === 1 ? key($offices) : null)
                     ->required(),
                 Radio::make('classification')
-                    ->options(RequestClassification::class)
+                    ->options(RequestClass::class)
                     ->required(),
             ];
         });

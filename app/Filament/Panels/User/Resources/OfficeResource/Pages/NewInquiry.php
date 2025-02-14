@@ -2,7 +2,7 @@
 
 namespace App\Filament\Panels\User\Resources\OfficeResource\Pages;
 
-use App\Enums\RequestClassification;
+use App\Enums\RequestClass;
 use App\Filament\Panels\User\Resources\OfficeResource;
 use App\Filament\Panels\User\Resources\OfficeResource\Concerns\NewRequest;
 use Filament\Resources\Pages\EditRecord;
@@ -15,5 +15,5 @@ class NewInquiry extends EditRecord
 
     protected static ?string $breadcrumb = 'New Inquiry';
 
-    protected static RequestClassification $classification = RequestClassification::INQUIRY;
+    protected static RequestClass $classification = RequestClass::INQUIRY;
 }

@@ -11,11 +11,11 @@ trait ShowRequest
 {
     protected function bootShowRequest(): void
     {
-        $this->name('show-request');
-
         $this->icon('heroicon-o-eye');
 
-        $this->modal();
+        $this->label('Show');
+
+        $this->slideOver();
 
         $this->modalIconColor(fn (Request $request) => $request->class->getColor());
 

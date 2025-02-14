@@ -14,7 +14,7 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
     case COMPLETED = 'completed';
     case CANCELLED = 'cancelled';
     case STARTED = 'started';
-    case PUBLISHED = 'published';
+    case SUBMITTED = 'submitted';
     case RETRACTED = 'retracted';
     case RESOLVED = 'resolved';
     case SUSPENDED = 'suspended';
@@ -36,7 +36,7 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
             self::CANCELLED => 'danger',
             self::STARTED => 'info',
             self::SUSPENDED => 'warning',
-            self::PUBLISHED => 'success',
+            self::SUBMITTED => 'success',
             self::RETRACTED => 'warning',
             self::ACCEPTED => 'success',
             self::REJECTED => 'danger',
@@ -59,7 +59,7 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
             self::CANCELLED => 'The request has been cancelled and will not be processed further.',
             self::STARTED => 'The request has been taken up and is in progress.',
             self::SUSPENDED => 'The request has been suspended and is awaiting further action.',
-            self::PUBLISHED => 'The request has been published by the user',
+            self::SUBMITTED => 'The request has been published by the user',
             self::RETRACTED => 'The request has been retracted by the requestor and is waiting to be republished.',
             self::RESOLVED => 'The request has been completed fully and will no longer receive updates',
             self::COMPLIED => 'The user submitted the lacking documents',
@@ -79,7 +79,7 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
             self::CANCELLED => 'gmdi-disabled-by-default-o',
             self::STARTED => 'gmdi-alarm-o',
             self::SUSPENDED => 'gmdi-front-hand-o',
-            self::PUBLISHED => 'gmdi-published-with-changes-o',
+            self::SUBMITTED => 'gmdi-published-with-changes-o',
             self::RETRACTED => 'gmdi-settings-backup-restore-o',
             self::ASSIGNED => 'gmdi-group-add-o',
             self::ACCEPTED => 'gmdi-how-to-reg-o',
@@ -138,7 +138,7 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
             self::CANCELLED,
             self::STARTED,
             self::SUSPENDED,
-            self::PUBLISHED,
+            self::SUBMITTED,
             self::RETRACTED,
             self::RESOLVED,
             self::DENIED,

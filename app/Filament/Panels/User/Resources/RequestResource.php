@@ -3,54 +3,25 @@
 namespace App\Filament\Panels\User\Resources;
 
 use App\Enums\ActionStatus;
-use App\Enums\RequestClassification;
-use App\Filament\Actions\Tables\UpdateRequestAction;
+use App\Filament\Actions\Tables\ResubmitRequestAction;
+use App\Filament\Actions\Tables\RetractRequestAction;
 use App\Filament\Actions\Tables\ShowRequestAction;
+use App\Filament\Actions\Tables\UpdateRequestAction;
+use App\Filament\Actions\Tables\ViewRequestHistoryAction;
 use App\Filament\Filters\OfficeFilter;
 use App\Filament\Panels\User\Resources\RequestResource\Pages;
 use App\Models\Request;
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
-use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class RequestResource extends Resource
 {
     protected static ?string $model = Request::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-lifebuoy';
-
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->columns(1)
-            ->schema(fn (Request $request) => [
-                Forms\Components\TextInput::make('subject')
-                    ->rule('required')
-                    ->markAsRequired()
-                    ->extraAttributes([
-                        'x-data' => '{}',
-                        'x-on:input' => 'event.target.value = event.target.value.charAt(0).toUpperCase() + event.target.value.slice(1)',
-                    ])
-                    ->helperText(fn () => 'Be clear and concise about '.match ($request->class) {
-                        RequestClassification::TICKET => 'the issue you are facing.',
-                        RequestClassification::SUGGESTION => 'the idea or suggestion you would like to share.',
-                        RequestClassification::INQUIRY => 'the question you have.',
-                    }),
-                Forms\Components\MarkdownEditor::make('body')
-                    ->required()
-                    ->helperText(fn () => 'Provide detailed information about '.match ($request->class) {
-                        RequestClassification::INQUIRY => 'your question, specifying any necessary context for clarity.',
-                        RequestClassification::SUGGESTION => 'your idea, explaining its benefits and potential impact.',
-                        RequestClassification::TICKET => 'the issue, including any steps to reproduce it and relevant details.',
-                    }),
-            ]);
-    }
 
     public static function table(Table $table): Table
     {
@@ -60,7 +31,7 @@ class RequestResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->limit(36)
-                    ->tooltip(fn ($column) => strlen($column->getState()) > $column->getCharacterLimit()? $column->getState() : null),
+                    ->tooltip(fn ($column) => strlen($column->getState()) > $column->getCharacterLimit() ? $column->getState() : null),
                 Tables\Columns\TextColumn::make('office.code')
                     ->sortable()
                     ->searchable()
@@ -87,30 +58,23 @@ class RequestResource extends Resource
             ])
             ->actions([
                 ShowRequestAction::make()
-                    ->label('Show'),
+                    ->label('Show')
+                    ->infolist([
+                        TextEntry::make('body')
+                            ->hiddenLabel()
+                            ->getStateUsing(fn (Request $request) => str($request->body)->markdown()->toHtmlString())
+                            ->markdown(),
+                    ]),
+                ResubmitRequestAction::make()
+                    ->label('Resubmit'),
+                ViewRequestHistoryAction::make()
+                    ->label('History'),
                 Tables\Actions\ActionGroup::make([
-                    Tables\Actions\EditAction::make()
-                        ->label('Update')
-                        ->slideOver()
-                        ->modalIcon('heroicon-o-pencil-square')
-                        ->modalWidth(MaxWidth::ExtraLarge)
-                        ->modalHeading(function (Request $request) {
-                            $classification = $request->class;
-
-                            $heading = <<<HTML
-                                <span class="text-custom-600 dark:text-custom-400" style="--c-400:var(--danger-400);--c-600:var(--danger-600);">
-                                    Update $classification->value
-                                </span>
-                                request for
-                                <span class="text-custom-600 dark:text-custom-400" style="--c-400:var(--primary-400);--c-600:var(--primary-600);">
-                                    {$request->office->code}
-                                </span>
-                            HTML;
-
-                            return str($heading)->toHtmlString();
-                        }),
+                    UpdateRequestAction::make(),
+                    RetractRequestAction::make()
+                        ->label('Retract'),
                     Tables\Actions\DeleteAction::make()
-                        ->disabled(function (Request $request) {
+                        ->hidden(function (Request $request) {
                             if (is_null($request->action)) {
                                 return false;
                             }

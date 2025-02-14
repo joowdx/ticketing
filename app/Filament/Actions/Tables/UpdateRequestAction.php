@@ -3,9 +3,9 @@
 namespace App\Filament\Actions\Tables;
 
 use App\Filament\Actions\Concerns\UpdateRequest;
-use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\EditAction;
 
-class UpdateRequestAction extends Action
+class UpdateRequestAction extends EditAction
 {
     use UpdateRequest;
 

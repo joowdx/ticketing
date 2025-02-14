@@ -2,7 +2,7 @@
 
 namespace App\Filament\Panels\User\Resources\RequestResource\Pages;
 
-use App\Enums\RequestClassification;
+use App\Enums\RequestClass;
 use App\Filament\Panels\User\Actions\NewRequestPromptAction;
 use App\Filament\Panels\User\Resources\RequestResource;
 use Filament\Resources\Components\Tab;
@@ -25,14 +25,14 @@ class ListRequests extends ListRecords
             'requests' => Tab::make('Requests')
                 ->icon('heroicon-o-lifebuoy'),
             'inquiry' => Tab::make('Inquiry')
-                ->icon(RequestClassification::INQUIRY->getIcon())
-                ->modifyQueryUsing(fn ($query) => $query->where('class', RequestClassification::INQUIRY)),
+                ->icon(RequestClass::INQUIRY->getIcon())
+                ->modifyQueryUsing(fn ($query) => $query->where('class', RequestClass::INQUIRY)),
             'suggestion' => Tab::make('Suggestion')
-                ->icon(RequestClassification::SUGGESTION->getIcon())
-                ->modifyQueryUsing(fn ($query) => $query->where('class', RequestClassification::SUGGESTION)),
+                ->icon(RequestClass::SUGGESTION->getIcon())
+                ->modifyQueryUsing(fn ($query) => $query->where('class', RequestClass::SUGGESTION)),
             'ticket' => Tab::make('Ticket')
-                ->icon(RequestClassification::TICKET->getIcon())
-                ->modifyQueryUsing(fn ($query) => $query->where('class', RequestClassification::TICKET)),
+                ->icon(RequestClass::TICKET->getIcon())
+                ->modifyQueryUsing(fn ($query) => $query->where('class', RequestClass::TICKET)),
         ];
     }
 }
