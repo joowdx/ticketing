@@ -9,10 +9,7 @@ use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\MaxWidth;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 
 trait UpdateRequest
 {
@@ -22,19 +19,21 @@ trait UpdateRequest
 
         $this->label('Update');
 
-        $this->modal();
+        $this->slideOver();
 
         $this->modalHeading('Update request');
 
         $this->modalFooterActionsAlignment(Alignment::End);
 
-        $this->modalSubmitActionLabel('Save');
+        $this->modalSubmitActionLabel('Update');
 
         $this->modalCancelActionLabel('Cancel');
 
         $this->modalWidth(MaxWidth::ExtraLarge);
 
-        $this->fillForm(fn (Request $request) => [
+        $this->successNotificationTitle('Request updated');
+
+        $this->fillForm(fn (Request $request): array => [
             'subject' => $request->subject,
             'body' => $request->body,
         ]);
@@ -61,39 +60,22 @@ trait UpdateRequest
                 }),
         ]);
 
-        $this->action(function (): void {
-            $this->process(function (array $data, Model $record, Table $table) {
-                $relationship = $table->getRelationship();
+        $this->action(function (Request $request, array $data): void {
+            $request->update($data);
 
-                $translatableContentDriver = $table->makeTranslatableContentDriver();
-
-                if ($relationship instanceof BelongsToMany) {
-                    $pivot = $record->{$relationship->getPivotAccessor()};
-
-                    $pivotColumns = $relationship->getPivotColumns();
-                    $pivotData = Arr::only($data, $pivotColumns);
-
-                    if (count($pivotColumns)) {
-                        if ($translatableContentDriver) {
-                            $translatableContentDriver->updateRecord($pivot, $pivotData);
-                        } else {
-                            $pivot->update($pivotData);
-                        }
-                    }
-
-                    $data = Arr::except($data, $pivotColumns);
-                }
-
-                if ($translatableContentDriver) {
-                    $translatableContentDriver->updateRecord($record, $data);
-                } else {
-                    $record->update($data);
-                }
-            });
+            $request->actions()->create([
+                'user_id' => Auth::id(),
+                'status' => ActionStatus::UPDATED,
+            ]);
 
             $this->success();
         });
 
-        $this->visible(fn (Request $request) => is_null($request->action) ?: $request->action?->status === ActionStatus::RETRACTED);
+        $this->hidden(fn (Request $request): bool => $request->trashed());
+
+        $this->visible(fn (Request $request): bool => is_null($request->action) ?: in_array($request->action?->status, [
+            ActionStatus::RETRACTED,
+            ActionStatus::RESTORED,
+        ]));
     }
 }

@@ -49,10 +49,9 @@ class RoleFilter extends Filter
                 case false:
                     $role = $data['role'];
 
-                    $query->when($role, fn ($query, $role) => $query->where('office_id', $role !== -1 ? $role : null));
+                    $query->when($role, fn ($query, $role) => $query->where('role', $role !== -1 ? $role : null));
 
                     break;
-
             }
         });
 

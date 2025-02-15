@@ -15,13 +15,15 @@ trait ShowRequest
 
         $this->label('Show');
 
+        $this->color('gray');
+
         $this->slideOver();
 
         $this->modalIconColor(fn (Request $request) => $request->class->getColor());
 
         $this->modalHeading(fn (Request $request) => $request->subject);
 
-        $this->modalDescription(fn (Request $request) => "{$request->created_at->diffForHumans()} ({$request->created_at->format('F j, Y H:i')})");
+        $this->modalDescription(fn (Request $request) => "{$request->user->name} {$request->created_at->diffForHumans()} ({$request->created_at->format('F j, Y H:i')})");
 
         $this->modalFooterActionsAlignment(Alignment::End);
 
@@ -37,5 +39,7 @@ trait ShowRequest
                 ->getStateUsing(fn (Request $request) => str($request->body)->markdown()->toHtmlString())
                 ->markdown(),
         ]);
+
+        $this->hidden(fn (Request $request) => $request->trashed());
     }
 }

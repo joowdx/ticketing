@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ActionStatus;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,6 +24,38 @@ class Action extends Model
     protected $casts = [
         'status' => ActionStatus::class,
     ];
+
+    public function remarks(): Attribute
+    {
+        return Attribute::make(
+            get: function (?string $remarks) {
+                if ($this->status !== ActionStatus::ASSIGNED) {
+                    return $remarks;
+                }
+
+                $pattern = '/\* ([a-z0-9]+)/i';
+
+                preg_match_all($pattern, $remarks, $matches);
+
+                $id = $matches[1] ?? [];
+
+                $footer = "\n\n *— This remark is system generated*";
+
+                if (count($id) === 1) {
+                    $user = User::find($id[0]);
+
+                    return preg_replace_callback($pattern, fn () => 'To: '.($user->name ?? '*(<u>anonymous</u>)*'), $remarks).$footer;
+                }
+
+                $users = User::whereIn('id', $id)
+                    ->pluck('name', 'id');
+
+                $mapped = preg_replace_callback($pattern, fn ($match) => '* '.($users[$match[1]] ?? '*(<u>anonymous</u>)*'), $remarks);
+
+                return "To:\n{$mapped}{$footer}";
+            },
+        )->shouldCache();
+    }
 
     public function attachment(): MorphOne
     {

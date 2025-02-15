@@ -22,12 +22,17 @@ trait ResubmitRequest
 
         $this->successNotificationTitle('Request resubmitted');
 
-        $this->visible(fn (Request $request) => is_null($request->action) ?: $request->action?->status === ActionStatus::RETRACTED);
+        $this->hidden(fn (Request $request): bool => $request->trashed());
 
-        $this->action(function (Request $request) {
+        $this->action(function (Request $request): void {
             $request->actions()->create(['user_id' => Auth::id(), 'status' => ActionStatus::SUBMITTED]);
 
             $this->sendSuccessNotification();
         });
+
+        $this->visible(fn (Request $request): bool => is_null($request->action) ?: in_array($request->action?->status, [
+            ActionStatus::RETRACTED,
+            ActionStatus::RESTORED,
+        ]));
     }
 }

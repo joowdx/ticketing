@@ -11,6 +11,8 @@ class UpdateRequestAction extends EditAction
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         $this->bootUpdateRequest();
     }
 }

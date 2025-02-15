@@ -17,7 +17,7 @@ class Assignee extends Pivot
     protected $fillable = [
         'response',
         'request_id',
-        'user_id',
+        'assigned_id',
         'assigner_id',
     ];
 

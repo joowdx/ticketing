@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Filament\Panels\Officer\Resources\RequestResource\Pages;
+
+use App\Enums\ActionStatus;
+use App\Enums\RequestClass;
+use App\Filament\Panels\Officer\Resources\RequestResource;
+use Filament\Resources\Components\Tab;
+use Filament\Resources\Pages\ListRecords;
+
+class ListRequests extends ListRecords
+{
+    protected static string $resource = RequestResource::class;
+
+    public function getTabs(): array
+    {
+        return [
+            'requests' => Tab::make('Requests')
+                ->icon('heroicon-o-lifebuoy'),
+            'received' => Tab::make('Received')
+                ->icon('heroicon-o-inbox')
+                ->modifyQueryUsing(fn ($query) => $query->whereHas('action', fn ($query) => $query->where('status', ActionStatus::SUBMITTED))),
+            'inquiry' => Tab::make('Inquiry')
+                ->icon(RequestClass::INQUIRY->getIcon())
+                ->modifyQueryUsing(fn ($query) => $query->where('class', RequestClass::INQUIRY)),
+            'suggestion' => Tab::make('Suggestion')
+                ->icon(RequestClass::SUGGESTION->getIcon())
+                ->modifyQueryUsing(fn ($query) => $query->where('class', RequestClass::SUGGESTION)),
+            'ticket' => Tab::make('Ticket')
+                ->icon(RequestClass::TICKET->getIcon())
+                ->modifyQueryUsing(fn ($query) => $query->where('class', RequestClass::TICKET)),
+        ];
+    }
+}

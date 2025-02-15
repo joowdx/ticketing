@@ -17,12 +17,20 @@ class ViewRequestHistoryAction extends Action
 
         $this->slideOver();
 
+        $this->modalIcon('gmdi-route-o');
+
         $this->modalWidth('lg');
+
+        $this->modalHeading('Request History');
+
+        $this->modalDescription('See the history of this request.');
 
         $this->modalSubmitAction(false);
 
         $this->modalCancelAction(false);
 
         $this->modalContent(fn (Request $request) => view('filament.requests.history', ['request' => $request]));
+
+        $this->hidden(fn (Request $request) => $request->trashed());
     }
 }

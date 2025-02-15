@@ -10,7 +10,6 @@ enum AssignmentResponse: string implements HasColor, HasLabel
     case ACCEPTED = 'accepted';
     case REJECTED = 'rejected';
     case PENDING = 'pending';
-    case COMPLETED = 'completed';
 
     public function getLabel(): ?string
     {
@@ -23,7 +22,6 @@ enum AssignmentResponse: string implements HasColor, HasLabel
             self::ACCEPTED => 'success',
             self::REJECTED => 'danger',
             self::PENDING => 'warning',
-            self::COMPLETED => 'info',
             default => 'gray'
         };
     }

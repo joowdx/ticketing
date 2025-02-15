@@ -147,6 +147,8 @@ trait NewRequest
 
         $request = Request::make($data);
 
+        $request->user()->associate(Auth::user());
+
         $request->office()->associate($record);
 
         $request->category()->associate($category);
@@ -162,7 +164,7 @@ trait NewRequest
 
     protected function getSavedNotificationMessage(): ?string
     {
-        return 'Request submitted successfully.';
+        return 'Request submitted successfully';
     }
 
     protected function getRedirectUrl(): ?string

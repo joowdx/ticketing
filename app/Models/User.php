@@ -133,6 +133,26 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
         return $this->belongsTo(User::class, 'deactivated_by');
     }
 
+    public function scopeUser(Builder $query): Builder
+    {
+        return $query->where('role', UserRole::USER);
+    }
+
+    public function scopeSupport(Builder $query): Builder
+    {
+        return $query->where('role', UserRole::SUPPORT);
+    }
+
+    public function scopeOfficer(Builder $query): Builder
+    {
+        return $query->where('role', UserRole::OFFICER);
+    }
+
+    public function scopeAdmin(Builder $query): Builder
+    {
+        return $query->where('role', UserRole::ADMIN);
+    }
+
     public function scopeForApproval(Builder $query): Builder
     {
         return $query->whereNull('approved_at')->whereNotNull('verified_at');
@@ -181,7 +201,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return in_array($panel->getId(), ['auth', 'user']) ?: $this->role->value === $panel->getId();
+        return in_array($panel->getId(), ['auth', 'user']) ?: $this->role?->value === $panel->getId();
     }
 
     public function getFilamentAvatarUrl(): ?string

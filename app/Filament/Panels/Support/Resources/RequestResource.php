@@ -1,30 +1,32 @@
 <?php
 
-namespace App\Filament\Panels\User\Resources;
+namespace App\Filament\Panels\Support\Resources;
 
-use App\Filament\Actions\Tables\DeleteRequestAction;
-use App\Filament\Actions\Tables\RestoreRequestAction;
-use App\Filament\Actions\Tables\ResubmitRequestAction;
-use App\Filament\Actions\Tables\RetractRequestAction;
 use App\Filament\Actions\Tables\ShowRequestAction;
-use App\Filament\Actions\Tables\UpdateRequestAction;
 use App\Filament\Actions\Tables\ViewRequestHistoryAction;
-use App\Filament\Filters\OfficeFilter;
-use App\Filament\Panels\User\Resources\RequestResource\Pages;
+use App\Filament\Panels\Support\Resources\RequestResource\Pages;
 use App\Models\Request;
-use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class RequestResource extends Resource
 {
     protected static ?string $model = Request::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-lifebuoy';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                //
+            ]);
+    }
 
     public static function table(Table $table): Table
     {
@@ -44,7 +46,7 @@ class RequestResource extends Resource
                 Tables\Columns\TextColumn::make('class')
                     ->badge()
                     ->alignEnd()
-                    ->visible(fn (HasTable $livewire) => $livewire->activeTab === 'requests'),
+                    ->visible(fn (HasTable $livewire) => in_array($livewire->activeTab, ['requests', 'received'])),
                 Tables\Columns\TextColumn::make('action.status')
                     ->label('Status')
                     ->badge()
@@ -56,33 +58,15 @@ class RequestResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                OfficeFilter::make()
-                    ->setModel(static::$model),
-                Tables\Filters\TrashedFilter::make()
-                    ->label('Deleted'),
+                //
             ])
             ->actions([
-                ResubmitRequestAction::make()
-                    ->label('Resubmit'),
-                ShowRequestAction::make()
-                    ->label('Show')
-                    ->infolist([
-                        TextEntry::make('body')
-                            ->hiddenLabel()
-                            ->getStateUsing(fn (Request $request) => str($request->body)->markdown()->toHtmlString())
-                            ->markdown(),
-                    ]),
+                ShowRequestAction::make(),
                 ViewRequestHistoryAction::make()
                     ->label('History'),
-                RestoreRequestAction::make(),
-                Tables\Actions\ActionGroup::make([
-                    UpdateRequestAction::make(),
-                    RetractRequestAction::make()
-                        ->label('Retract'),
-                    DeleteRequestAction::make(),
-                    Tables\Actions\ForceDeleteAction::make()
-                        ->label('Delete'),
-                ]),
+            ])
+            ->bulkActions([
+
             ]);
     }
 
@@ -96,8 +80,7 @@ class RequestResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
+            ->where('office_id', Auth::user()->office_id)
+            ->whereHas('assignees', fn ($query) => $query->where('assigned_id', Auth::id()));
     }
 }

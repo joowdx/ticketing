@@ -51,6 +51,7 @@ class AuthPanelProvider extends PanelProvider
                 Verify::class,
                 Approve::class,
             ])
+            ->databaseTransactions()
             ->topNavigation()
             ->spa();
     }

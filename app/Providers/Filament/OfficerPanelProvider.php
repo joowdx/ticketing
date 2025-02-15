@@ -51,6 +51,7 @@ class OfficerPanelProvider extends PanelProvider
                 Verify::class,
                 Approve::class,
             ])
+            ->databaseTransactions()
             ->topNavigation()
             ->spa();
     }

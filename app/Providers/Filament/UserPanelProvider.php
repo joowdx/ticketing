@@ -53,6 +53,7 @@ class UserPanelProvider extends PanelProvider
                 Approve::class,
                 Active::class,
             ])
+            ->databaseTransactions()
             ->topNavigation()
             ->spa();
     }

@@ -9,6 +9,9 @@ use Filament\Support\Contracts\HasLabel;
 
 enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
 {
+    case RESTORED = 'restored';
+    case TRASHED = 'trashed';
+    case UPDATED = 'updated';
     case APPROVED = 'approved';
     case DECLINED = 'declined';
     case COMPLETED = 'completed';
@@ -30,6 +33,9 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
     public function getColor(): ?string
     {
         return match ($this) {
+            self::RESTORED,
+            self::TRASHED => 'gray',
+            self::UPDATED => 'info',
             self::APPROVED => 'success',
             self::DECLINED => 'danger',
             self::COMPLETED => 'success',
@@ -53,6 +59,9 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
     public function getDescription(): ?string
     {
         return match ($this) {
+            self::RESTORED => 'The request has been restored after being trashed.',
+            self::TRASHED => 'The request has been trashed.',
+            self::UPDATED => 'The request has been updated.',
             self::ACCEPTED => 'The request has been accepted.',
             self::DECLINED => 'The request has been declined.',
             self::COMPLETED => 'The request has been completed.',
@@ -72,6 +81,9 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
     public function getIcon(): ?string
     {
         return match ($this) {
+            self::RESTORED => 'gmdi-restore-o',
+            self::TRASHED => 'gmdi-delete-o',
+            self::UPDATED => 'gmdi-update-o',
             self::APPROVED => 'gmdi-verified-o',
             self::DECLINED => 'gmdi-block-o',
             self::COMPLETED => 'gmdi-task-alt-o',
@@ -79,10 +91,10 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
             self::CANCELLED => 'gmdi-disabled-by-default-o',
             self::STARTED => 'gmdi-alarm-o',
             self::SUSPENDED => 'gmdi-front-hand-o',
-            self::SUBMITTED => 'gmdi-published-with-changes-o',
+            self::SUBMITTED => 'gmdi-publish-o',
             self::RETRACTED => 'gmdi-settings-backup-restore-o',
-            self::ASSIGNED => 'gmdi-group-add-o',
-            self::ACCEPTED => 'gmdi-how-to-reg-o',
+            self::ASSIGNED => 'gmdi-supervisor-account-o',
+            self::ACCEPTED => 'gmdi-published-with-changes-o',
             self::REJECTED => 'gmdi-person-off-o',
             self::ADJUSTED => 'gmdi-scale-o',
             self::SCHEDULED => 'gmdi-event-o',
@@ -96,6 +108,7 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
     {
         $label = match ($type) {
             'nounForm' => match ($this->value) {
+                'updated' => 'update',
                 'approved' => 'approval',
                 'declined' => 'declination',
                 'completed' => 'completion',
@@ -129,9 +142,10 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
         return $capitalize ? ucfirst($label) : $label;
     }
 
-    public function major()
+    public static function majorActions()
     {
-        return in_array($this, [
+        return [
+            self::ASSIGNED,
             self::APPROVED,
             self::DECLINED,
             self::COMPLETED,
@@ -142,18 +156,30 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
             self::RETRACTED,
             self::RESOLVED,
             self::DENIED,
-        ]);
+        ];
     }
 
-    public function minor()
+    public static function minorActions()
     {
-        return in_array($this, [
-            self::ASSIGNED,
+        return [
+            self::RESTORED,
+            self::TRASHED,
+            self::UPDATED,
             self::ACCEPTED,
             self::REJECTED,
             self::ADJUSTED,
             self::SCHEDULED,
             self::COMPLIED,
-        ]);
+        ];
+    }
+
+    public function major()
+    {
+        return in_array($this, self::majorActions());
+    }
+
+    public function minor()
+    {
+        return in_array($this, self::minorActions());
     }
 }

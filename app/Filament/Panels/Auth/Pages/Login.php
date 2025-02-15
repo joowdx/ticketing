@@ -17,13 +17,13 @@ class Login extends LoginPage
 {
     public function authenticate(): ?LoginResponse
     {
-        // try {
-        //     $this->rateLimit(5);
-        // } catch (TooManyRequestsException $exception) {
-        //     $this->getRateLimitedNotification($exception)?->send();
+        try {
+            $this->rateLimit(5);
+        } catch (TooManyRequestsException $exception) {
+            $this->getRateLimitedNotification($exception)?->send();
 
-        //     return null;
-        // }
+            return null;
+        }
 
         $data = $this->form->getState();
 

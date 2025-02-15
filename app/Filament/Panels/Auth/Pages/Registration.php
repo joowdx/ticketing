@@ -84,8 +84,8 @@ class Registration extends Register
                             $this->getNameFormComponent()
                                 ->prefixIcon('heroicon-o-identification'),
                             $this->getNumberFormComponent(),
-                            $this->getOfficeFormComponent(),
                             $this->getDesignationFormComponent(),
+                            $this->getOfficeFormComponent(),
                         ]),
                     Step::make('Credentials')
                         ->icon('heroicon-o-shield-check')
@@ -118,6 +118,13 @@ class Registration extends Register
             ->directory('avatars');
     }
 
+    protected function getDesignationFormComponent(): Component
+    {
+        return TextInput::make('designation')
+            ->label('Designation')
+            ->prefixIcon('heroicon-o-tag');
+    }
+
     protected function getOfficeFormComponent(): Component
     {
         $offices = Office::pluck('code', 'id');
@@ -129,15 +136,7 @@ class Registration extends Register
             ->disabled($offices->isEmpty())
             ->placeholder('Select Office')
             ->prefixIcon('heroicon-o-building-office-2')
-            ->hintIcon('heroicon-o-information-circle')
-            ->hintIconTooltip('Skip this if you can\'t find your office and tell us about it in the message.');
-    }
-
-    protected function getDesignationFormComponent(): Component
-    {
-        return TextInput::make('designation')
-            ->label('Designation')
-            ->prefixIcon('heroicon-o-tag');
+            ->hint('Skip this if you can\'t find your office and tell us about it in the message.');
     }
 
     protected function getNumberFormComponent(): Component

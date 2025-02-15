@@ -56,36 +56,22 @@ class Request extends Model
 
     public function assignees(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'assignees')
+        return $this->belongsToMany(User::class, 'assignees', 'request_id', 'assigned_id')
             ->using(Assignee::class)
-            ->withPivot(['response', 'responded_at', 'assigner_id']);
+            ->withTimestamps()
+            ->withPivot(['response', 'responded_at', 'assigned_id', 'assigner_id']);
     }
 
     public function action(): HasOne
     {
         return $this->hasOne(Action::class)
-            ->ofMany(['id' => 'max'], function ($query) {
-                $query->whereIn('status', [
-                    ActionStatus::APPROVED,
-                    ActionStatus::DECLINED,
-                    ActionStatus::SUBMITTED,
-                    ActionStatus::CANCELLED,
-                    ActionStatus::STARTED,
-                    ActionStatus::SUSPENDED,
-                    ActionStatus::RETRACTED,
-                    ActionStatus::COMPLIED,
-                    ActionStatus::COMPLETED,
-                    ActionStatus::RESOLVED,
-                    ActionStatus::VERIFIED,
-                    ActionStatus::DENIED,
-                ]);
-            });
+            ->ofMany(['id' => 'max'], fn ($query) => $query->whereIn('status', ActionStatus::majorActions()));
     }
 
     public function actions(): HasMany
     {
         return $this->hasMany(Action::class)
-            ->orderBy('created_at', 'desc');
+            ->latest();
     }
 
     public function category(): BelongsTo
