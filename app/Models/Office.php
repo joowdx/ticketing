@@ -21,6 +21,11 @@ class Office extends Model
         'building',
         'room',
         'logo',
+        'settings',
+    ];
+
+    protected $casts = [
+        'settings' => 'object',
     ];
 
     public function logoUrl(): Attribute

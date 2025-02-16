@@ -166,11 +166,14 @@ class Registration extends Register
 
     protected function getRoleFormComponent(): Component
     {
+        $roles = collect(UserRole::cases())
+            ->reject(fn (UserRole $role) => $role === UserRole::ROOT)
+            ->mapWithKeys(fn (UserRole $role) => [$role->value => $role->getLabel()]);
+
         return Select::make('role')
-            ->options(UserRole::class)
-            ->disableOptionWhen(fn (string $value) => $value === UserRole::ADMIN->value)
+            ->options($roles)
             ->default('user')
-            ->helperText('Subject for approval by the administrator.')
+            ->helperText('Subject for approval of the organization.')
             ->required();
     }
 
@@ -181,7 +184,7 @@ class Registration extends Register
             ->rows(6)
             ->rule('required')
             ->markAsRequired()
-            ->helperText('Tell us about the purpose of your registration to help us approve your account.');
+            ->helperText('Tell us about the purpose of your registration to help us approve your account, and in certain cases, we may ask for additional information to verify your identity.');
     }
 
     public function getRegisterFormAction(): Action

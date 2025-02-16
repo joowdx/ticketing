@@ -36,14 +36,14 @@ class UserFactory extends Factory
     }
 
     /**
-     * Default superuser user account.
+     * Default root user account.
      */
-    public function superuser(): static
+    public function root(): static
     {
         return $this->state(fn () => [
-            'name' => 'Superuser',
-            'email' => 'superuser@local.dev',
-            'role' => 'admin',
+            'name' => 'Root',
+            'email' => 'root@local.dev',
+            'role' => UserRole::ROOT,
             'verified_at' => 1,
             'approved_at' => 1,
             'password' => '$2y$12$.jM7SD37qQAvDhmCHz414uToHIWwl9129xyMTgbDXlT8/KvKfXxU.',
