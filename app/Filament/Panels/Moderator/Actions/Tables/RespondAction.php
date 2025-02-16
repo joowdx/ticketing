@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Panels\Officer\Actions\Tables;
+namespace App\Filament\Panels\Moderator\Actions\Tables;
 
 use Filament\Tables\Actions\ActionGroup;
 

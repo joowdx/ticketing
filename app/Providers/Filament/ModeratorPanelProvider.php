@@ -19,17 +19,17 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-class OfficerPanelProvider extends PanelProvider
+class ModeratorPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->id('officer')
-            ->path('officer')
+            ->id('moderator')
+            ->path('moderator')
             ->font('Figtree')
-            ->discoverResources(in: app_path('Filament/Panels/Officer/Resources'), for: 'App\\Filament\\Panels\\Officer\\Resources')
-            ->discoverPages(in: app_path('Filament/Panels/Officer/Pages'), for: 'App\\Filament\\Panels\\Officer\\Pages')
-            ->discoverWidgets(in: app_path('Filament/Panels/Officer/Widgets'), for: 'App\\Filament\\Panels\\Officer\\Widgets')
+            ->discoverResources(in: app_path('Filament/Panels/Moderator/Resources'), for: 'App\\Filament\\Panels\\Moderator\\Resources')
+            ->discoverPages(in: app_path('Filament/Panels/Moderator/Pages'), for: 'App\\Filament\\Panels\\Moderator\\Pages')
+            ->discoverWidgets(in: app_path('Filament/Panels/Moderator/Widgets'), for: 'App\\Filament\\Panels\\Moderator\\Widgets')
             ->pages([Pages\Dashboard::class])
             ->widgets([
                 Widgets\AccountWidget::class,

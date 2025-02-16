@@ -7,7 +7,7 @@ use Filament\Support\Contracts\HasLabel;
 enum UserRole: string implements HasLabel
 {
     case ADMIN = 'admin';
-    case OFFICER = 'officer';
+    case MODERATOR = 'moderator';
     case SUPPORT = 'support';
     case USER = 'user';
 

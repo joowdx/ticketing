@@ -62,9 +62,9 @@ class Action extends Model
         return $this->morphOne(Attachment::class, 'attachable');
     }
 
-    public function request(): BelongsToMany
+    public function request(): BelongsTo
     {
-        return $this->belongsToMany(Request::class);
+        return $this->belongsTo(Request::class);
     }
 
     public function user(): BelongsTo

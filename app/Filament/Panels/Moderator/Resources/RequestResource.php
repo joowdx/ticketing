@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Filament\Panels\Officer\Resources;
+namespace App\Filament\Panels\Moderator\Resources;
 
 use App\Enums\ActionStatus;
 use App\Filament\Actions\Tables\ShowRequestAction;
 use App\Filament\Actions\Tables\ViewRequestHistoryAction;
-use App\Filament\Panels\Officer\Actions\Tables\RespondAction;
-use App\Filament\Panels\Officer\Resources\RequestResource\Pages;
+use App\Filament\Panels\Moderator\Actions\Tables\RespondAction;
+use App\Filament\Panels\Moderator\Resources\RequestResource\Pages;
 use App\Models\Request;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

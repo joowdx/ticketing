@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Panels\Officer\Resources\RequestResource\Pages;
+namespace App\Filament\Panels\Moderator\Resources\RequestResource\Pages;
 
 use App\Enums\ActionStatus;
 use App\Enums\RequestClass;
-use App\Filament\Panels\Officer\Resources\RequestResource;
+use App\Filament\Panels\Moderator\Resources\RequestResource;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 

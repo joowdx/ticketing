@@ -19,6 +19,7 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
     case STARTED = 'started';
     case SUBMITTED = 'submitted';
     case RETRACTED = 'retracted';
+    case QUEUED = 'queued';
     case RESOLVED = 'resolved';
     case SUSPENDED = 'suspended';
     case ASSIGNED = 'assigned';
@@ -48,7 +49,8 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
             self::REJECTED => 'danger',
             self::ASSIGNED  ,
             self::ADJUSTED ,
-            self::RESOLVED => 'info',
+            self::QUEUED,
+            self::RESOLVED,
             self::SCHEDULED => 'info',
             self::COMPLIED => 'warning',
             self::DENIED => 'danger',
@@ -59,6 +61,7 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
     public function getDescription(): ?string
     {
         return match ($this) {
+            self::QUEUED => 'The request has been queued and is awaiting processing.',
             self::RESTORED => 'The request has been restored after being trashed.',
             self::TRASHED => 'The request has been trashed.',
             self::UPDATED => 'The request has been updated.',
@@ -81,6 +84,7 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
     public function getIcon(): ?string
     {
         return match ($this) {
+            self::QUEUED => 'gmdi-hourglass-bottom-o',
             self::RESTORED => 'gmdi-restore-o',
             self::TRASHED => 'gmdi-delete-o',
             self::UPDATED => 'gmdi-update-o',
