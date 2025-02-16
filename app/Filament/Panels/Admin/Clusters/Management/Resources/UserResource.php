@@ -3,6 +3,8 @@
 namespace App\Filament\Panels\Admin\Clusters\Management\Resources;
 
 use App\Enums\UserRole;
+use App\Filament\Actions\Tables\ApproveAccountAction;
+use App\Filament\Actions\Tables\DeactivateAccessAction;
 use App\Filament\Panels\Admin\Clusters\Management;
 use App\Filament\Panels\Admin\Clusters\Management\Resources\UserResource\Pages;
 use App\Filament\Panels\Admin\Clusters\Management\Resources\UserResource\RelationManagers;
@@ -12,7 +14,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\Contracts\HasTable;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -20,11 +22,11 @@ use Illuminate\Support\Facades\Auth;
 
 class UserResource extends Resource
 {
-    protected static ?int $navigationSort = -10;
-
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'gmdi-person-pin-o';
+    protected static ?string $recordTitleAttribute = 'name';
+
+    protected static ?string $navigationIcon = 'gmdi-supervised-user-circle-o';
 
     protected static ?string $cluster = Management::class;
 
@@ -36,6 +38,7 @@ class UserResource extends Resource
     {
         return $form
             ->columns(3)
+            ->disabled(fn (User $user) => $user->trashed())
             ->schema([
                 Forms\Components\FileUpload::make('avatar')
                     ->avatar()
@@ -138,21 +141,23 @@ class UserResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                // Tables\Actions\EditAction::make()
-                //     ->visible(fn (HasTable $livewire) => in_array($livewire->activeTab, ['all', 'approval', 'deactivated'])),
-                // // ApproveAccountAction::make()
-                // //     ->label('Approve'),
-                // Tables\Actions\ActionGroup::make([
-                //     // DeactivateAccessAction::make()
-                //     //     ->label(fn (User $user) => $user->deactivated_at ? 'Reactivate' : 'Deactivate')
-                //     //     ->visible(fn (HasTable $livewire) => in_array($livewire->activeTab, ['all', 'deactivated'])),
-                //     Tables\Actions\DeleteAction::make()
-                //         ->visible(fn (HasTable $livewire) => in_array($livewire->activeTab, ['all', 'approval', 'confirmation'])),
-                // ]),
+                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn (HasTable $livewire) => in_array($livewire->activeTab, ['all', 'approval', 'deactivated'])),
+                ApproveAccountAction::make()
+                    ->label('Approve'),
+                Tables\Actions\ActionGroup::make([
+                    DeactivateAccessAction::make()
+                        ->label(fn (User $user) => $user->deactivated_at ? 'Reactivate' : 'Deactivate')
+                        ->visible(fn (HasTable $livewire) => in_array($livewire->activeTab, ['all', 'deactivated'])),
+                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\ForceDeleteAction::make(),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\RestoreBulkAction::make(),
                 ]),
             ]);
     }
@@ -181,6 +186,5 @@ class UserResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
-
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Panels\Root\Actions\Concerns;
+namespace App\Filament\Actions\Concerns;
 
 use App\Enums\UserRole;
 use App\Models\Office;

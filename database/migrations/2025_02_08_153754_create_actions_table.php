@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('actions', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->foreignUlid('request_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignUlid('user_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignUlid('user_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate()->nullable();
             $table->string('status')->nullable();
             $table->text('remarks')->nullable();
             $table->timestamps();

@@ -25,7 +25,7 @@ class Office extends Model
     ];
 
     protected $casts = [
-        'settings' => 'object',
+        'settings' => 'array',
     ];
 
     public function logoUrl(): Attribute

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Panels\Root\Actions\Tables;
+namespace App\Filament\Actions;
 
-use App\Filament\Panels\Root\Actions\Concerns\ChangePassword;
+use App\Filament\Actions\Concerns\ChangePassword;
 use Filament\Actions\Action;
 
 class ChangePasswordAction extends Action

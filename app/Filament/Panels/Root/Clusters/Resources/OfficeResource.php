@@ -68,6 +68,16 @@ class OfficeResource extends Resource
                         Forms\Components\TextInput::make('room')
                             ->columnSpan(1),
                     ]),
+                Forms\Components\Section::make('Request Management')
+                    ->columns([
+                        'sm' => 1,
+                        'md' => 3,
+                    ])
+                    ->schema([
+                        Forms\Components\TextInput::make('settings.auto_queue')
+                            ->placeholder('Number of minutes')
+                            ->rules(['numeric']),
+                    ]),
             ]);
     }
 

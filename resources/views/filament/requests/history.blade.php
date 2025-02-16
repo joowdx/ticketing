@@ -36,8 +36,8 @@
                     </div>
 
                     <time class="block mb-2 text-sm font-light leading-none text-neutral-500">
-                        <span class="font-bold">
-                            {{ $action->user->name }}
+                        <span @class(["font-bold", "italic" => is_null($action->user)])>
+                            {{ $action->user?->name ?? 'Automatically' }}
                         </span>
 
                         on {{ $action->created_at->format('jS \of F Y \a\t H:i') }}

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->ulid('id')->primary();
             $table->string('name');
             $table->foreignUlid('category_id')->nullable()->constrained()->nullOnDelete()->cascadeOnUpdate();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

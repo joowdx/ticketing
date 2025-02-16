@@ -36,6 +36,11 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
         }
 
+        $this->configureFilament();
+    }
+
+    protected function configureFilament(): void
+    {
         FilamentView::registerRenderHook(PanelsRenderHook::HEAD_START, fn () => Blade::render('@vite(\'resources/css/app.css\')'));
 
         Notifications::verticalAlignment(VerticalAlignment::End);
@@ -60,26 +65,23 @@ class AppServiceProvider extends ServiceProvider
 
         TrashedFilter::configureUsing(fn (TrashedFilter $filter) => $filter->native(false));
 
-        \Filament\Actions\ForceDeleteAction::configureUsing(function (\Filament\Actions\ForceDeleteAction $action) {
-            $action->form([
-                TextInput::make('password')
-                    ->password()
-                    ->rule('required')
-                    ->markAsRequired()
-                    ->currentPassword()
-                    ->helperText('Enter your password to confirm.'),
-            ]);
-        });
+        $forceDeletes = [
+            \Filament\Actions\ForceDeleteAction::class,
+            \Filament\Tables\Actions\ForceDeleteAction::class,
+            \Filament\Tables\Actions\ForceDeleteBulkAction::class,
+        ];
 
-        \Filament\Tables\Actions\ForceDeleteAction::configureUsing(function (\Filament\Tables\Actions\ForceDeleteAction $action) {
-            $action->form([
-                TextInput::make('password')
-                    ->password()
-                    ->rule('required')
-                    ->markAsRequired()
-                    ->currentPassword()
-                    ->helperText('Enter your password to confirm.'),
-            ]);
-        });
+        foreach ($forceDeletes as $forceDelete) {
+            $forceDelete::configureUsing(function ($action) {
+                $action->form([
+                    TextInput::make('password')
+                        ->password()
+                        ->rule('required')
+                        ->markAsRequired()
+                        ->currentPassword()
+                        ->helperText('Enter your password to confirm.'),
+                ]);
+            });
+        }
     }
 }

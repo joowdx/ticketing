@@ -3,10 +3,10 @@
 namespace App\Filament\Panels\Root\Clusters\Resources;
 
 use App\Enums\UserRole;
+use App\Filament\Actions\Tables\ApproveAccountAction;
+use App\Filament\Actions\Tables\ApproveAccountBulkAction;
+use App\Filament\Actions\Tables\DeactivateAccessAction;
 use App\Filament\Filters\OfficeFilter;
-use App\Filament\Panels\Root\Actions\Tables\ApproveAccountAction;
-use App\Filament\Panels\Root\Actions\Tables\ApproveAccountBulkAction;
-use App\Filament\Panels\Root\Actions\Tables\DeactivateAccessAction;
 use App\Filament\Panels\Root\Clusters\Organization;
 use App\Filament\Panels\Root\Clusters\Resources\UserResource\Filters\RoleFilter;
 use App\Filament\Panels\Root\Clusters\Resources\UserResource\Pages;
@@ -150,15 +150,16 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->visible(fn (HasTable $livewire) => in_array($livewire->activeTab, ['all', 'approval', 'deactivated'])),
+                    ->visible(fn (HasTable $livewire, User $user) => ! $user->trashed() && in_array($livewire->activeTab, ['all', 'approval', 'deactivated'])),
                 ApproveAccountAction::make()
                     ->label('Approve'),
+                Tables\Actions\RestoreAction::make(),
                 Tables\Actions\ActionGroup::make([
                     DeactivateAccessAction::make()
-                        ->label(fn (User $user) => $user->deactivated_at ? 'Reactivate' : 'Deactivate')
-                        ->visible(fn (HasTable $livewire) => in_array($livewire->activeTab, ['all', 'deactivated'])),
+                        ->label(fn (User $user) => $user->deactivated_at ? 'Reactivate' : 'Deactivate'),
                     Tables\Actions\DeleteAction::make()
                         ->visible(fn (HasTable $livewire) => in_array($livewire->activeTab, ['all', 'approval', 'confirmation'])),
+                    Tables\Actions\ForceDeleteAction::make(),
                 ]),
             ])
             ->bulkActions([

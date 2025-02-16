@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Panels\Root\Actions\Tables;
+namespace App\Filament\Actions\Tables;
 
-use App\Filament\Panels\Root\Actions\Concerns\ApproveAccount;
+use App\Filament\Actions\Concerns\ApproveAccount;
 use Filament\Tables\Actions\BulkAction;
 
 class ApproveAccountBulkAction extends BulkAction

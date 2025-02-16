@@ -4,6 +4,7 @@ namespace App\Filament\Panels\Admin\Clusters\Management\Resources\UserResource\P
 
 use App\Filament\Panels\Admin\Clusters\Management\Resources\UserResource;
 use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
 
 class EditUser extends EditRecord
@@ -13,7 +14,20 @@ class EditUser extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\RestoreAction::make(),
+            Actions\ActionGroup::make([
+                Actions\DeleteAction::make(),
+                Actions\ForceDeleteAction::make(),
+            ])
         ];
+    }
+
+    protected function getSaveFormAction(): Action
+    {
+        return Action::make('save')
+            ->label(__('filament-panels::resources/pages/edit-record.form.actions.save.label'))
+            ->submit('save')
+            ->keyBindings(['mod+s'])
+            ->disabled(fn () => ! $this->record->hasActiveAccess() || ! $this->record->hasVerifiedEmail() || $this->record->trashed());
     }
 }

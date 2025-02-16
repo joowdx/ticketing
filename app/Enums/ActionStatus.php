@@ -149,6 +149,7 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
     public static function majorActions()
     {
         return [
+            self::QUEUED,
             self::ASSIGNED,
             self::APPROVED,
             self::DECLINED,

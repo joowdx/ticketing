@@ -2,9 +2,9 @@
 
 namespace App\Filament\Panels\Root\Clusters\Resources\UserResource\Pages;
 
-use App\Filament\Panels\Root\Actions\ApproveAccountAction;
-use App\Filament\Panels\Root\Actions\DeactivateAccessAction;
-use App\Filament\Panels\Root\Actions\Tables\ChangePasswordAction;
+use App\Filament\Actions\ApproveAccountAction;
+use App\Filament\Actions\ChangePasswordAction;
+use App\Filament\Actions\DeactivateAccessAction;
 use App\Filament\Panels\Root\Clusters\Resources\UserResource;
 use Filament\Actions;
 use Filament\Actions\Action;
@@ -23,7 +23,8 @@ class EditUser extends EditRecord
             Actions\RestoreAction::make(),
             Actions\ActionGroup::make([
                 Actions\DeleteAction::make(),
-                Actions\ForceDeleteAction::make(),
+                Actions\ForceDeleteAction::make()
+                    ->label('Delete'),
             ]),
         ];
     }

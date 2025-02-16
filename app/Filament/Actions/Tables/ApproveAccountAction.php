@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Panels\Root\Actions;
+namespace App\Filament\Actions\Tables;
 
-use App\Filament\Panels\Root\Actions\Concerns\ApproveAccount;
-use Filament\Actions\Action;
+use App\Filament\Actions\Concerns\ApproveAccount;
+use Filament\Tables\Actions\Action;
 
 class ApproveAccountAction extends Action
 {

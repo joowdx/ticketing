@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Panels\Root\Actions;
+namespace App\Filament\Actions;
 
-use App\Filament\Panels\Root\Actions\Concerns\DeactivateAccess;
+use App\Filament\Actions\Concerns\DeactivateAccess;
 use Filament\Actions\Action;
 
 class DeactivateAccessAction extends Action
