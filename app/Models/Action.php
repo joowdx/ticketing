@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Action extends Model
@@ -39,12 +38,10 @@ class Action extends Model
 
                 $id = $matches[1] ?? [];
 
-                $footer = "\n\n *— This remark is system generated*";
-
                 if (count($id) === 1) {
                     $user = User::find($id[0]);
 
-                    return preg_replace_callback($pattern, fn () => 'To: '.($user->name ?? '*(<u>anonymous</u>)*'), $remarks).$footer;
+                    return preg_replace_callback($pattern, fn () => 'To: '.($user->name ?? '*(<u>anonymous</u>)*'), $remarks);
                 }
 
                 $users = User::whereIn('id', $id)
@@ -52,7 +49,7 @@ class Action extends Model
 
                 $mapped = preg_replace_callback($pattern, fn ($match) => '* '.($users[$match[1]] ?? '*(<u>anonymous</u>)*'), $remarks);
 
-                return "To:\n{$mapped}{$footer}";
+                return "To:\n{$mapped}";
             },
         )->shouldCache();
     }

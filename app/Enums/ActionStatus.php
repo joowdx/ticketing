@@ -9,6 +9,7 @@ use Filament\Support\Contracts\HasLabel;
 
 enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
 {
+    case STALE = 'stale';
     case RESTORED = 'restored';
     case TRASHED = 'trashed';
     case UPDATED = 'updated';
@@ -31,29 +32,83 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
     case VERIFIED = 'verified';
     case DENIED = 'denied';
 
+    public static function allowedTransitions(): array
+    {
+        return [
+            static::SUBMITTED->value => [
+                static::RETRACTED,
+                static::UPDATED,
+                static::QUEUED,
+            ],
+            static::QUEUED->value => [
+                static::ASSIGNED,
+                static::REJECTED,
+            ],
+            static::ASSIGNED->value => [
+                static::STARTED,
+                static::QUEUED,
+                static::REJECTED,
+                static::ASSIGNED,
+            ],
+            static::STARTED->value => [
+                static::COMPLETED,
+                static::SUSPENDED,
+            ],
+        ];
+    }
+
+    public static function canTransitionTo(self $from, self $to): bool
+    {
+        return in_array($to, static::allowedTransitions()[$from->value] ?? [], true);
+    }
+
+    public static function majorActions(): array
+    {
+        return array_filter(self::cases(), fn($case) => in_array($case->value, [
+            self::STALE->value,
+            self::QUEUED->value,
+            self::ASSIGNED->value,
+            self::APPROVED->value,
+            self::DECLINED->value,
+            self::COMPLETED->value,
+            self::CANCELLED->value,
+            self::STARTED->value,
+            self::SUSPENDED->value,
+            self::SUBMITTED->value,
+            self::RETRACTED->value,
+            self::RESOLVED->value,
+            self::DENIED->value,
+        ], true));
+    }
+
+    public static function minorActions(): array
+    {
+        return array_filter(self::cases(), fn($case) => !in_array($case, self::majorActions(), true));
+    }
+
     public function getColor(): ?string
     {
         return match ($this) {
-            self::RESTORED,
-            self::TRASHED => 'gray',
-            self::UPDATED => 'info',
-            self::APPROVED => 'success',
-            self::DECLINED => 'danger',
-            self::COMPLETED => 'success',
-            self::CANCELLED => 'danger',
-            self::STARTED => 'info',
-            self::SUSPENDED => 'warning',
-            self::SUBMITTED => 'success',
-            self::RETRACTED => 'warning',
-            self::ACCEPTED => 'success',
-            self::REJECTED => 'danger',
-            self::ASSIGNED  ,
-            self::ADJUSTED ,
-            self::QUEUED,
-            self::RESOLVED,
-            self::SCHEDULED => 'info',
-            self::COMPLIED => 'warning',
-            self::DENIED => 'danger',
+            static::RESTORED,
+            static::TRASHED => 'gray',
+            static::UPDATED => 'info',
+            static::APPROVED => 'success',
+            static::DECLINED => 'danger',
+            static::COMPLETED => 'success',
+            static::CANCELLED => 'danger',
+            static::STARTED => 'info',
+            static::SUSPENDED => 'warning',
+            static::SUBMITTED => 'success',
+            static::RETRACTED => 'warning',
+            static::ACCEPTED => 'success',
+            static::REJECTED => 'danger',
+            static::ASSIGNED  ,
+            static::ADJUSTED ,
+            static::QUEUED,
+            static::RESOLVED,
+            static::SCHEDULED => 'info',
+            static::COMPLIED => 'warning',
+            static::DENIED => 'danger',
             default => 'gray'
         };
     }
@@ -61,22 +116,22 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
     public function getDescription(): ?string
     {
         return match ($this) {
-            self::QUEUED => 'The request has been queued and is awaiting processing.',
-            self::RESTORED => 'The request has been restored after being trashed.',
-            self::TRASHED => 'The request has been trashed.',
-            self::UPDATED => 'The request has been updated.',
-            self::ACCEPTED => 'The request has been accepted.',
-            self::DECLINED => 'The request has been declined.',
-            self::COMPLETED => 'The request has been completed.',
-            self::CANCELLED => 'The request has been cancelled and will not be processed further.',
-            self::STARTED => 'The request has been taken up and is in progress.',
-            self::SUSPENDED => 'The request has been suspended and is awaiting further action.',
-            self::SUBMITTED => 'The request has been published by the user',
-            self::RETRACTED => 'The request has been retracted by the requestor and is waiting to be republished.',
-            self::RESOLVED => 'The request has been completed fully and will no longer receive updates',
-            self::COMPLIED => 'The user submitted the lacking documents',
-            self::DENIED => 'The user has rejected the completion of the request',
-            self::APPROVED => 'The request has been accepted and is being processed',
+            static::QUEUED => 'The request has been queued and is awaiting processing.',
+            static::RESTORED => 'The request has been restored after being trashed.',
+            static::TRASHED => 'The request has been trashed.',
+            static::UPDATED => 'The request has been updated.',
+            static::ACCEPTED => 'The request has been accepted.',
+            static::DECLINED => 'The request has been declined.',
+            static::COMPLETED => 'The request has been completed.',
+            static::CANCELLED => 'The request has been cancelled and will not be processed further.',
+            static::STARTED => 'The request has been taken up and is in progress.',
+            static::SUSPENDED => 'The request has been suspended and is awaiting further action.',
+            static::SUBMITTED => 'The request has been published by the user',
+            static::RETRACTED => 'The request has been retracted by the requestor and is waiting to be republished.',
+            static::RESOLVED => 'The request has been completed fully and will no longer receive updates',
+            static::COMPLIED => 'The user submitted the lacking documents',
+            static::DENIED => 'The user has rejected the completion of the request',
+            static::APPROVED => 'The request has been accepted and is being processed',
             default => null
         };
     }
@@ -84,26 +139,26 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
     public function getIcon(): ?string
     {
         return match ($this) {
-            self::QUEUED => 'gmdi-hourglass-bottom-o',
-            self::RESTORED => 'gmdi-restore-o',
-            self::TRASHED => 'gmdi-delete-o',
-            self::UPDATED => 'gmdi-update-o',
-            self::APPROVED => 'gmdi-verified-o',
-            self::DECLINED => 'gmdi-block-o',
-            self::COMPLETED => 'gmdi-task-alt-o',
-            self::RESOLVED => 'gmdi-approval-tt',
-            self::CANCELLED => 'gmdi-disabled-by-default-o',
-            self::STARTED => 'gmdi-alarm-o',
-            self::SUSPENDED => 'gmdi-front-hand-o',
-            self::SUBMITTED => 'gmdi-publish-o',
-            self::RETRACTED => 'gmdi-settings-backup-restore-o',
-            self::ASSIGNED => 'gmdi-supervisor-account-o',
-            self::ACCEPTED => 'gmdi-published-with-changes-o',
-            self::REJECTED => 'gmdi-person-off-o',
-            self::ADJUSTED => 'gmdi-scale-o',
-            self::SCHEDULED => 'gmdi-event-o',
-            self::COMPLIED => 'gmdi-task-r',
-            self::DENIED => 'gmdi-do-not-disturb-on-total-silence',
+            static::QUEUED => 'gmdi-start-o',
+            static::RESTORED => 'gmdi-restore-o',
+            static::TRASHED => 'gmdi-delete-o',
+            static::UPDATED => 'gmdi-update-o',
+            static::APPROVED => 'gmdi-verified-o',
+            static::DECLINED => 'gmdi-block-o',
+            static::COMPLETED => 'gmdi-task-alt-o',
+            static::RESOLVED => 'gmdi-approval-tt',
+            static::CANCELLED => 'gmdi-disabled-by-default-o',
+            static::STARTED => 'gmdi-alarm-o',
+            static::SUSPENDED => 'gmdi-front-hand-o',
+            static::SUBMITTED => 'gmdi-publish-o',
+            static::RETRACTED => 'gmdi-settings-backup-restore-o',
+            static::ASSIGNED => 'gmdi-supervisor-account-o',
+            static::ACCEPTED => 'gmdi-published-with-changes-o',
+            static::REJECTED => 'gmdi-person-off-o',
+            static::ADJUSTED => 'gmdi-scale-o',
+            static::SCHEDULED => 'gmdi-event-o',
+            static::COMPLIED => 'gmdi-task-r',
+            static::DENIED => 'gmdi-do-not-disturb-on-total-silence',
             default => 'gmdi-circle-o',
         };
     }
@@ -146,45 +201,13 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
         return $capitalize ? ucfirst($label) : $label;
     }
 
-    public static function majorActions()
-    {
-        return [
-            self::QUEUED,
-            self::ASSIGNED,
-            self::APPROVED,
-            self::DECLINED,
-            self::COMPLETED,
-            self::CANCELLED,
-            self::STARTED,
-            self::SUSPENDED,
-            self::SUBMITTED,
-            self::RETRACTED,
-            self::RESOLVED,
-            self::DENIED,
-        ];
-    }
-
-    public static function minorActions()
-    {
-        return [
-            self::RESTORED,
-            self::TRASHED,
-            self::UPDATED,
-            self::ACCEPTED,
-            self::REJECTED,
-            self::ADJUSTED,
-            self::SCHEDULED,
-            self::COMPLIED,
-        ];
-    }
-
     public function major()
     {
-        return in_array($this, self::majorActions());
+        return in_array($this, static::majorActions(), true);
     }
 
     public function minor()
     {
-        return in_array($this, self::minorActions());
+        return in_array($this, static::minorActions(), true);
     }
 }

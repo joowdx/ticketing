@@ -4,17 +4,20 @@ namespace App\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 
 class MarkStaleRequests implements ShouldQueue
 {
     use Queueable;
 
     /**
-     * Create a new job instance.
+     * Get the middleware the job should pass through.
+     *
+     * @return array<int, object>
      */
-    public function __construct()
+    public function middleware(): array
     {
-        //
+        return [new WithoutOverlapping('auto-queue-request-job')];
     }
 
     /**
@@ -22,6 +25,10 @@ class MarkStaleRequests implements ShouldQueue
      */
     public function handle(): void
     {
-        //
+        $execute = function () {
+
+        };
+
+        $execute();
     }
 }

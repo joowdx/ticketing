@@ -20,15 +20,12 @@ class ListRequests extends ListRecords
             'received' => Tab::make('Received')
                 ->icon('heroicon-o-inbox')
                 ->modifyQueryUsing(fn ($query) => $query->whereHas('action', fn ($query) => $query->where('status', ActionStatus::SUBMITTED))),
-            'inquiry' => Tab::make('Inquiry')
-                ->icon(RequestClass::INQUIRY->getIcon())
-                ->modifyQueryUsing(fn ($query) => $query->where('class', RequestClass::INQUIRY)),
-            'suggestion' => Tab::make('Suggestion')
-                ->icon(RequestClass::SUGGESTION->getIcon())
-                ->modifyQueryUsing(fn ($query) => $query->where('class', RequestClass::SUGGESTION)),
-            'ticket' => Tab::make('Ticket')
-                ->icon(RequestClass::TICKET->getIcon())
-                ->modifyQueryUsing(fn ($query) => $query->where('class', RequestClass::TICKET)),
+            'queued' => Tab::make('Queued')
+                ->icon('heroicon-o-clock')
+                ->modifyQueryUsing(fn ($query) => $query->whereHas('action', fn ($query) => $query->where('status', ActionStatus::QUEUED))),
+            'pending' => Tab::make('Pending')
+                ->icon('heroicon-o-user-group')
+                ->modifyQueryUsing(fn ($query) => $query->whereHas('action', fn ($query) => $query->where('status', ActionStatus::ASSIGNED))),
         ];
     }
 }

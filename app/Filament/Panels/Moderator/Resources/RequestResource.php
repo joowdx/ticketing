@@ -5,6 +5,8 @@ namespace App\Filament\Panels\Moderator\Resources;
 use App\Enums\ActionStatus;
 use App\Filament\Actions\Tables\ShowRequestAction;
 use App\Filament\Actions\Tables\ViewRequestHistoryAction;
+use App\Filament\Panels\Moderator\Actions\Tables\AssignRequestAction;
+use App\Filament\Panels\Moderator\Actions\Tables\QueueRequestAction;
 use App\Filament\Panels\Moderator\Actions\Tables\RespondAction;
 use App\Filament\Panels\Moderator\Resources\RequestResource\Pages;
 use App\Models\Request;
@@ -47,8 +49,7 @@ class RequestResource extends Resource
                     ->tooltip(fn (Request $request) => $request->office->name),
                 Tables\Columns\TextColumn::make('class')
                     ->badge()
-                    ->alignEnd()
-                    ->visible(fn (HasTable $livewire) => in_array($livewire->activeTab, ['requests', 'received'])),
+                    ->alignEnd(),
                 Tables\Columns\TextColumn::make('action.status')
                     ->label('Status')
                     ->badge()
@@ -64,10 +65,10 @@ class RequestResource extends Resource
             ])
             ->actions([
                 ShowRequestAction::make(),
+                AssignRequestAction::make(),
+                QueueRequestAction::make(),
                 ViewRequestHistoryAction::make()
                     ->label('History'),
-                RespondAction::make()
-                    ->label('Respond'),
             ]);
     }
 

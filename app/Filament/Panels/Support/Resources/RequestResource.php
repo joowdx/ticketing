@@ -4,6 +4,7 @@ namespace App\Filament\Panels\Support\Resources;
 
 use App\Filament\Actions\Tables\ShowRequestAction;
 use App\Filament\Actions\Tables\ViewRequestHistoryAction;
+use App\Filament\Panels\Support\Actions\Tables\RequeueRequestAction;
 use App\Filament\Panels\Support\Resources\RequestResource\Pages;
 use App\Models\Request;
 use Filament\Forms\Form;
@@ -18,7 +19,7 @@ class RequestResource extends Resource
 {
     protected static ?string $model = Request::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-lifebuoy';
 
     public static function form(Form $form): Form
     {
@@ -45,8 +46,7 @@ class RequestResource extends Resource
                     ->tooltip(fn (Request $request) => $request->office->name),
                 Tables\Columns\TextColumn::make('class')
                     ->badge()
-                    ->alignEnd()
-                    ->visible(fn (HasTable $livewire) => in_array($livewire->activeTab, ['requests', 'received'])),
+                    ->alignEnd(),
                 Tables\Columns\TextColumn::make('action.status')
                     ->label('Status')
                     ->badge()
@@ -61,6 +61,7 @@ class RequestResource extends Resource
                 //
             ])
             ->actions([
+                RequeueRequestAction::make(),
                 ShowRequestAction::make(),
                 ViewRequestHistoryAction::make()
                     ->label('History'),

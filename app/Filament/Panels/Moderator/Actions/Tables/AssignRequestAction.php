@@ -7,6 +7,9 @@ use App\Models\Request;
 use App\Models\User;
 use Exception;
 use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Tables\Actions\Action;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +36,7 @@ class AssignRequestAction extends Action
 
         $this->modalContent(fn (Request $request) => $request->office->users()->support()->doesntExist() ? str('No support users found')->toHtmlString() : null);
 
-        $this->modalWidth(MaxWidth::Large);
+        $this->modalWidth(MaxWidth::ExtraLarge);
 
         $this->modalSubmitAction(fn (Request $request) => $request->office->users()->support()->exists() ? null : false);
 
@@ -42,10 +45,16 @@ class AssignRequestAction extends Action
         $this->successNotificationTitle(fn (Request $request) => $request->action->status === ActionStatus::ASSIGNED ? 'Request reassigned' : 'Request assigned');
 
         $this->fillForm(fn (Request $request) => [
+            'declination' => $request->declination,
             'assignees' => $request->assignees->pluck('id')->toArray(),
         ]);
 
         $this->form(fn (Request $request) => $request->office->users()->support()->exists() ? [
+            Toggle::make('declination')
+                ->label('Allow declination')
+                ->helperText('Allow assignees to have the option to decline the assignment')
+                ->default(true),
+            MarkdownEditor::make('remarks'),
             CheckboxList::make('assignees')
                 ->required()
                 ->searchable()
@@ -59,11 +68,21 @@ class AssignRequestAction extends Action
                 $request->assignees->pluck('id')->diff($data['assignees'])->isEmpty() &&
                 collect($data['assignees'])->diff($request->assignees->pluck('id')->toArray())->isEmpty()
             ) {
+                Notification::make()
+                    ->info()
+                    ->title('No changes made')
+                    ->body('As there are no changes to assignees, action was not performed.')
+                    ->send();
+
                 return;
             }
 
             try {
                 $this->beginDatabaseTransaction();
+
+                $request->update([
+                    'declination' => $data['declination'],
+                ]);
 
                 $request->actions()->create([
                     'status' => ActionStatus::ASSIGNED,
@@ -71,7 +90,7 @@ class AssignRequestAction extends Action
                     'remarks' => User::select('id')
                         ->find($data['assignees'])
                         ->map(fn (User $user) => ['id' => "* {$user->id}"])
-                        ->implode('id', "\n"),
+                        ->implode('id', "\n") . "\n\n" . $data['remarks'],
                 ]);
 
                 $request->assignees()->sync(
@@ -99,6 +118,6 @@ class AssignRequestAction extends Action
             }
         });
 
-        $this->visible(fn (Request $request) => in_array($request->action->status, [ActionStatus::SUBMITTED, ActionStatus::ASSIGNED]));
+        $this->visible(fn (Request $request) => in_array($request->action->status, [ActionStatus::QUEUED, ActionStatus::ASSIGNED]));
     }
 }

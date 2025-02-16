@@ -26,6 +26,7 @@ class Request extends Model
         'priority',
         'difficulty',
         'availability',
+        'declination',
         'office_id',
         'category_id',
         'subcategory_id',
@@ -35,6 +36,7 @@ class Request extends Model
     protected $casts = [
         'class' => RequestClass::class,
         'availability' => 'datetime',
+        'declination' => 'boolean',
     ];
 
     public static function booted(): void

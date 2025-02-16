@@ -19,6 +19,7 @@ return new class extends Migration
             $table->smallInteger('priority')->nullable();
             $table->smallInteger('difficulty')->nullable();
             $table->datetime('availability')->nullable();
+            $table->boolean('declination')->default(true);
             $table->foreignUlid('office_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
             $table->foreignUlid('category_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();
             $table->foreignUlid('subcategory_id')->nullable()->constrained()->cascadeOnUpdate()->nullOnDelete();

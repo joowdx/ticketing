@@ -95,6 +95,9 @@ class Settings extends Page
                         Forms\Components\TextInput::make('settings.auto_queue')
                             ->placeholder('Number of minutes')
                             ->rules(['numeric']),
+                        Forms\Components\Toggle::make('settings.support_reassignment')
+                            ->inline(false)
+                            ->disabled(),
                     ]),
             ])
             ->statePath('data');

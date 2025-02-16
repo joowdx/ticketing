@@ -18,12 +18,12 @@
                             @switch($action->status)
                                 @case(ActionStatus::SUBMITTED)
                                 @case(ActionStatus::ASSIGNED)
+                                @case(ActionStatus::QUEUED)
                                     {{
-                                        $request->actions->filter(fn ($act) => $act->status === $action->status)->reverse()->first()->is($action)
+                                        $request->actions->reverse()->first(fn ($act) => $act->status === $action->status)->is($action)
                                             ? $action->status->getLabel()
                                             : "Re{$action->status->value}"
                                     }}
-
                                     @break
                                 @default
                                     {{ $action->status->getLabel() }}
