@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\RequestClassification;
-use App\Enums\RequestStatus;
+use App\Enums\ActionStatus;
+use App\Enums\RequestClass;
 use App\Models\Concerns\HasManyAttachmentsThroughActions;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -20,26 +20,29 @@ class Request extends Model
     use HasManyAttachmentsThroughActions, HasUlids, SoftDeletes;
 
     protected $fillable = [
-        'classification',
+        'class',
+        'code',
         'subject',
         'body',
         'priority',
         'difficulty',
         'availability',
+        'declination',
         'office_id',
         'category_id',
         'subcategory_id',
-        'requestor_id',
+        'user_id',
     ];
 
     protected $casts = [
-        'classification' => RequestClassification::class,
+        'class' => RequestClass::class,
         'availability' => 'datetime',
+        'declination' => 'boolean',
     ];
 
     public static function booted(): void
     {
-        static::deleting(fn (self $request) => $request->purge());
+        static::forceDeleting(fn (self $request) => $request->purge());
 
         static::saving(function (self $request) {
             $request->tags()->sync(
@@ -56,35 +59,22 @@ class Request extends Model
 
     public function assignees(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'assignees')
+        return $this->belongsToMany(User::class, 'assignees', 'request_id', 'assigned_id')
             ->using(Assignee::class)
-            ->withPivot(['response', 'responded_at', 'assigner_id']);
+            ->withTimestamps()
+            ->withPivot(['response', 'responded_at', 'assigned_id', 'assigner_id']);
     }
 
     public function action(): HasOne
     {
         return $this->hasOne(Action::class)
-            ->ofMany(['id' => 'max'], function ($query) {
-                $query->whereIn('status', [
-                    RequestStatus::APPROVED,
-                    RequestStatus::DECLINED,
-                    RequestStatus::PUBLISHED,
-                    RequestStatus::CANCELLED,
-                    RequestStatus::STARTED,
-                    RequestStatus::SUSPENDED,
-                    RequestStatus::RETRACTED,
-                    RequestStatus::COMPLIED,
-                    RequestStatus::COMPLETED,
-                    RequestStatus::RESOLVED,
-                    RequestStatus::VERIFIED,
-                    RequestStatus::DENIED,
-                ]);
-            });
+            ->ofMany(['id' => 'max'], fn ($query) => $query->whereIn('status', ActionStatus::majorActions()));
     }
 
     public function actions(): HasMany
     {
-        return $this->hasMany(Action::class);
+        return $this->hasMany(Action::class)
+            ->latest();
     }
 
     public function category(): BelongsTo
@@ -92,7 +82,7 @@ class Request extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function requestor(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

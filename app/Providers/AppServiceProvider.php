@@ -36,7 +36,18 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
         }
 
+        $this->configureFilament();
+    }
+
+    protected function configureFilament(): void
+    {
         FilamentView::registerRenderHook(PanelsRenderHook::HEAD_START, fn () => Blade::render('@vite(\'resources/css/app.css\')'));
+
+        FilamentView::registerRenderHook(PanelsRenderHook::TOPBAR_START, fn () => Blade::render('<div class="flex h-16 px-4 md:px-6 lg:px-8 items-center gap-x-4 max-w-screen-2xl mx-auto w-full 2xl:px-8">'));
+
+        FilamentView::registerRenderHook(PanelsRenderHook::TOPBAR_END, fn () => Blade::render('</div>'));
+
+        FilamentView::registerRenderHook(PanelsRenderHook::HEAD_START, fn () => Blade::render('<style>nav{padding:0!important;}</style>'));
 
         Notifications::verticalAlignment(VerticalAlignment::End);
 
@@ -60,26 +71,23 @@ class AppServiceProvider extends ServiceProvider
 
         TrashedFilter::configureUsing(fn (TrashedFilter $filter) => $filter->native(false));
 
-        \Filament\Actions\ForceDeleteAction::configureUsing(function (\Filament\Actions\ForceDeleteAction $action) {
-            $action->form([
-                TextInput::make('password')
-                    ->password()
-                    ->rule('required')
-                    ->markAsRequired()
-                    ->currentPassword()
-                    ->helperText('Enter your password to confirm.'),
-            ]);
-        });
+        $forceDeletes = [
+            \Filament\Actions\ForceDeleteAction::class,
+            \Filament\Tables\Actions\ForceDeleteAction::class,
+            \Filament\Tables\Actions\ForceDeleteBulkAction::class,
+        ];
 
-        \Filament\Tables\Actions\ForceDeleteAction::configureUsing(function (\Filament\Tables\Actions\ForceDeleteAction $action) {
-            $action->form([
-                TextInput::make('password')
-                    ->password()
-                    ->rule('required')
-                    ->markAsRequired()
-                    ->currentPassword()
-                    ->helperText('Enter your password to confirm.'),
-            ]);
-        });
+        foreach ($forceDeletes as $forceDelete) {
+            $forceDelete::configureUsing(function ($action) {
+                $action->form([
+                    TextInput::make('password')
+                        ->password()
+                        ->rule('required')
+                        ->markAsRequired()
+                        ->currentPassword()
+                        ->helperText('Enter your password to confirm.'),
+                ]);
+            });
+        }
     }
 }

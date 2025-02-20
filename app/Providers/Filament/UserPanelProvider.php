@@ -13,6 +13,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -28,7 +29,10 @@ class UserPanelProvider extends PanelProvider
         return $panel
             ->id('user')
             ->path('user')
-            ->colors(['primary' => Color::Green])
+            ->homeUrl('/')
+            ->brandLogo(fn () => view('banner'))
+            ->font('Urbanist')
+            ->colors([...Color::all(), 'gray' => Color::Neutral])
             ->discoverResources(in: app_path('Filament/Panels/User/Resources'), for: 'App\\Filament\\Panels\\User\\Resources')
             ->discoverPages(in: app_path('Filament/Panels/User/Pages'), for: 'App\\Filament\\Panels\\User\\Pages')
             ->discoverWidgets(in: app_path('Filament/Panels/User/Widgets'), for: 'App\\Filament\\Panels\\User\\Widgets')
@@ -54,6 +58,9 @@ class UserPanelProvider extends PanelProvider
                 Approve::class,
                 Active::class,
             ])
-            ->topNavigation();
+            ->maxContentWidth(MaxWidth::ScreenTwoExtraLarge)
+            ->databaseTransactions()
+            ->topNavigation()
+            ->spa();
     }
 }

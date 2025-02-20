@@ -21,6 +21,11 @@ class Office extends Model
         'building',
         'room',
         'logo',
+        'settings',
+    ];
+
+    protected $casts = [
+        'settings' => 'array',
     ];
 
     public function logoUrl(): Attribute
@@ -41,6 +46,11 @@ class Office extends Model
     public function subcategories(): HasManyThrough
     {
         return $this->hasManyThrough(Subcategory::class, Category::class);
+    }
+
+    public function tags(): HasMany
+    {
+        return $this->hasMany(Tag::class);
     }
 
     public function requests(): HasMany

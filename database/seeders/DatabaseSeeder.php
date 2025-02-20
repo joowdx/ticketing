@@ -13,6 +13,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->superuser()->create();
+        if (User::query()->root()->doesntExist()) {
+            User::factory()->root()->create();
+        }
     }
 }

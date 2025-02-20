@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('tags', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->string('name');
-            $table->ulidMorphs('taggable');
+            $table->string('color', 24)->nullable();
+            $table->foreignUlid('office_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignUlid('category_id')->nullable()->constrained()->nullOnDelete()->cascadeOnUpdate();
+            $table->foreignUlid('subcategory_id')->nullable()->constrained()->nullOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

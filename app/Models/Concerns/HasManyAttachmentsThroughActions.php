@@ -27,8 +27,13 @@ trait HasManyAttachmentsThroughActions
 
     public function files(): LazyCollection
     {
-        return LazyCollection::make(function () {
-            $directory = 'attachments';
+        $directory = 'attachments';
+
+        if (! is_dir(Storage::path('public/'.$directory))) {
+            return LazyCollection::make();
+        }
+
+        return LazyCollection::make(function () use ($directory) {
 
             $handle = opendir(Storage::path('public/'.$directory));
 

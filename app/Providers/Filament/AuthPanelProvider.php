@@ -15,6 +15,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\MaxWidth;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -30,9 +31,13 @@ class AuthPanelProvider extends PanelProvider
             ->default()
             ->id('auth')
             ->path('auth')
+            ->homeUrl('/')
+            ->brandLogo(fn () => view('banner'))
+            ->font('Urbanist')
             ->login(Login::class)
             ->registration(Registration::class)
             ->revealablePasswords(false)
+            ->colors([...Color::all(), 'gray' => Color::Neutral])
             ->discoverPages(in: app_path('Filament/Panels/Auth/Pages'), for: 'App\\Filament\\Panels\\Auth\\Pages')
             ->pages([Redirect::class])
             ->middleware([
@@ -50,7 +55,11 @@ class AuthPanelProvider extends PanelProvider
                 Authenticate::class,
                 Verify::class,
                 Approve::class,
-            ]);
+            ])
+            ->maxContentWidth(MaxWidth::ScreenTwoExtraLarge)
+            ->databaseTransactions()
+            ->topNavigation()
+            ->spa();
     }
 }
 

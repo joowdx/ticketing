@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('room')->nullable();
             $table->string('building')->nullable();
-            $table->softDeletes();
+            $table->jsonb('settings')->nullable();
+            $table->softDeletes()->index();
             $table->timestamps();
         });
 

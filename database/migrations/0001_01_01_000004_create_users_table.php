@@ -28,7 +28,7 @@ return new class extends Migration
             $table->timestamp('verified_at')->nullable();
             $table->timestamp('approved_at')->nullable();
             $table->timestamp('deactivated_at')->nullable();
-            $table->softDeletes();
+            $table->softDeletes()->index();
             $table->timestamps();
         });
 

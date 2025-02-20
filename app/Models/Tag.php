@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Tag extends Model
 {
@@ -14,9 +14,18 @@ class Tag extends Model
 
     protected $fillable = [
         'name',
-        'taggable_type',
-        'taggable_id',
+        'color',
+        'office_id',
+        'category_id',
+        'subcategory_id',
     ];
+
+    public static function booted()
+    {
+        static::addGlobalScope('non_trashed_parent', function (Builder $query) {
+            $query->whereHas('office');
+        });
+    }
 
     public function name(): Attribute
     {
@@ -26,18 +35,18 @@ class Tag extends Model
         );
     }
 
-    public function category(): MorphToMany
+    public function office(): BelongsTo
     {
-        return $this->morphedByMany(Category::class, 'taggable');
+        return $this->belongsTo(Office::class);
     }
 
-    public function subcategory(): MorphToMany
+    public function category(): BelongsTo
     {
-        return $this->morhpedByMany(Subcategory::class, 'taggable');
+        return $this->belongsTo(Category::class);
     }
 
-    public function taggable(): MorphTo
+    public function subcategory(): BelongsTo
     {
-        return $this->morphTo();
+        return $this->belongsTo(Subcategory::class);
     }
 }

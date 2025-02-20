@@ -84,8 +84,8 @@ class Registration extends Register
                             $this->getNameFormComponent()
                                 ->prefixIcon('heroicon-o-identification'),
                             $this->getNumberFormComponent(),
-                            $this->getOfficeFormComponent(),
                             $this->getDesignationFormComponent(),
+                            $this->getOfficeFormComponent(),
                         ]),
                     Step::make('Credentials')
                         ->icon('heroicon-o-shield-check')
@@ -118,6 +118,13 @@ class Registration extends Register
             ->directory('avatars');
     }
 
+    protected function getDesignationFormComponent(): Component
+    {
+        return TextInput::make('designation')
+            ->label('Designation')
+            ->prefixIcon('heroicon-o-tag');
+    }
+
     protected function getOfficeFormComponent(): Component
     {
         $offices = Office::pluck('code', 'id');
@@ -129,15 +136,7 @@ class Registration extends Register
             ->disabled($offices->isEmpty())
             ->placeholder('Select Office')
             ->prefixIcon('heroicon-o-building-office-2')
-            ->hintIcon('heroicon-o-information-circle')
-            ->hintIconTooltip('Skip this if you can\'t find your office and tell us about it in the message.');
-    }
-
-    protected function getDesignationFormComponent(): Component
-    {
-        return TextInput::make('designation')
-            ->label('Designation')
-            ->prefixIcon('heroicon-o-tag');
+            ->hint('Skip this if you can\'t find your office and tell us about it in the message.');
     }
 
     protected function getNumberFormComponent(): Component
@@ -167,11 +166,14 @@ class Registration extends Register
 
     protected function getRoleFormComponent(): Component
     {
+        $roles = collect(UserRole::cases())
+            ->reject(fn (UserRole $role) => $role === UserRole::ROOT)
+            ->mapWithKeys(fn (UserRole $role) => [$role->value => $role->getLabel()]);
+
         return Select::make('role')
-            ->options(UserRole::class)
-            ->disableOptionWhen(fn (string $value) => $value === UserRole::ADMIN->value)
+            ->options($roles)
             ->default('user')
-            ->helperText('Subject for approval by the administrator.')
+            ->helperText('Subject for approval of the organization.')
             ->required();
     }
 
@@ -182,7 +184,7 @@ class Registration extends Register
             ->rows(6)
             ->rule('required')
             ->markAsRequired()
-            ->helperText('Tell us about the purpose of your registration to help us approve your account.');
+            ->helperText('Tell us about the purpose of your registration to help us approve your account, and in certain cases, we may ask for additional information to verify your identity.');
     }
 
     public function getRegisterFormAction(): Action
