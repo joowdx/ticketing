@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Panels\Support\Resources\RequestResource\Pages;
+namespace App\Filament\Panels\Agent\Resources\RequestResource\Pages;
 
 use App\Enums\ActionStatus;
-use App\Filament\Panels\Support\Resources\RequestResource;
+use App\Filament\Panels\Agent\Resources\RequestResource;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 

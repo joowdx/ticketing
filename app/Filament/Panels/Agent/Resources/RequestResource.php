@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Filament\Panels\Support\Resources;
+namespace App\Filament\Panels\Agent\Resources;
 
 use App\Filament\Actions\Tables\ShowRequestAction;
 use App\Filament\Actions\Tables\ViewRequestHistoryAction;
-use App\Filament\Panels\Support\Actions\Tables\RequeueRequestAction;
-use App\Filament\Panels\Support\Resources\RequestResource\Pages;
+use App\Filament\Panels\Agent\Actions\Tables\RequeueRequestAction;
+use App\Filament\Panels\Agent\Resources\RequestResource\Pages;
 use App\Models\Request;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
