@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Http\Responses\Auth\Contracts\LogoutResponse;
 use Filament\Notifications\Livewire\Notifications;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\VerticalAlignment;
@@ -89,5 +90,7 @@ class AppServiceProvider extends ServiceProvider
                 ]);
             });
         }
+
+        $this->app->bind(LogoutResponse::class, \App\Http\Responses\LogoutResponse::class);
     }
 }

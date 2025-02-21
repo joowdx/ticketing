@@ -4,9 +4,11 @@ namespace App\Filament\Panels\Auth\Pages;
 
 use App\Enums\UserRole;
 use App\Models\Office;
+use App\Models\User;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use Filament\Actions\Action;
 use Filament\Events\Auth\Registered;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
@@ -17,14 +19,16 @@ use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Form;
 use Filament\Http\Responses\Auth\Contracts\RegistrationResponse;
+use Filament\Notifications\Auth\VerifyEmail;
 use Filament\Notifications\Notification;
 use Filament\Pages\Auth\Register;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 
 class Registration extends Register
 {
-    protected ?string $maxWidth = '2xl';
+    protected ?string $maxWidth = 'xl';
 
     protected static string $layout = 'filament-panels::components.layout.base';
 
@@ -40,6 +44,7 @@ class Registration extends Register
             return null;
         }
 
+        /** @var Authenticatable|User $user */
         $user = $this->wrapInDatabaseTransaction(function () {
             $this->callHook('beforeValidate');
 
@@ -61,6 +66,12 @@ class Registration extends Register
         });
 
         event(new Registered($user));
+
+        $notification = app(VerifyEmail::class);
+
+        $notification->url = Filament::getVerifyEmailUrl($user);
+
+        $user->notify($notification);
 
         Notification::make()
             ->title('Registration successful')
