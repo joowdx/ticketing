@@ -36,17 +36,18 @@ class TagRelationshipFilter extends Filter
                 Select::make('category')
                     ->reactive()
                     ->searchable()
-                    ->disabled(fn ($get) => !$get('office'))
+                    ->disabled(fn ($get) => ! $get('office'))
                     ->options(fn ($get) => $get('office') ? Office::find($get('office'))->categories->pluck('name', 'id')->toArray() : [])
                     ->afterStateUpdated(fn ($set) => $set('subcategory', null)),
                 Select::make('subcategory')
                     ->reactive()
                     ->searchable()
-                    ->disabled(fn ($get) => !$get('office') || !$get('category'))
+                    ->disabled(fn ($get) => ! $get('office') || ! $get('category'))
                     ->options(function ($get) {
-                        if (!$get('office') || !$get('category')) {
+                        if (! $get('office') || ! $get('category')) {
                             return [];
                         }
+
                         return Office::find($get('office'))->categories->find($get('category'))->subcategories->pluck('name', 'id')->toArray();
                     }),
             ];

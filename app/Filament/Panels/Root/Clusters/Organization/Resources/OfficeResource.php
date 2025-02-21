@@ -7,7 +7,6 @@ use App\Filament\Panels\Root\Clusters\Organization\Resources\OfficeResource\Page
 use App\Models\Office;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -72,8 +71,7 @@ class OfficeResource extends Resource
                 Tables\Columns\ImageColumn::make('logo_url')
                     ->label('Logo')
                     ->circular()
-                    ->extraImgAttributes(['loading' => 'lazy'])
-                    ,
+                    ->extraImgAttributes(['loading' => 'lazy']),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(isIndividual: true)
                     ->sortable(),

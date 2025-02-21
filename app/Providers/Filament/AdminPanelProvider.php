@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\Active;
 use App\Http\Middleware\Approve;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\Verify;
@@ -56,6 +57,7 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
                 Verify::class,
                 Approve::class,
+                Active::class,
             ])
             ->maxContentWidth(MaxWidth::ScreenTwoExtraLarge)
             ->databaseTransactions()

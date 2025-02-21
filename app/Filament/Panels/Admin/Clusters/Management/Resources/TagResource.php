@@ -33,7 +33,7 @@ class TagResource extends Resource
                 Forms\Components\Placeholder::make('preview')
                     ->columnSpanFull()
                     ->content(fn ($get) => new HtmlString(
-                        Blade::render("<x-filament::badge color=\"{$get('color')}\">".($get('name') ?: 'tag')."</x-filament::badge>")
+                        Blade::render("<x-filament::badge color=\"{$get('color')}\">".($get('name') ?: 'tag').'</x-filament::badge>')
                     )),
                 Forms\Components\TextInput::make('name')
                     ->maxLength(24)

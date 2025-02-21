@@ -15,6 +15,10 @@ use Illuminate\Validation\ValidationException;
 
 class Login extends LoginPage
 {
+    protected static string $layout = 'filament-panels::components.layout.base';
+
+    protected static string $view = 'filament.panels.auth.pages.login';
+
     public function authenticate(): ?LoginResponse
     {
         try {

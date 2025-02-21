@@ -1,15 +1,16 @@
-<div class="min-h-screen flex items-center justify-center relative">
-    <div class="bg-cover absolute inset-0 h-full w-full bg-center z-0" style="background-image: url('/svg/background.svg');"></div>
-
-    <div class="absolute inset-0 bg-black bg-opacity-30"></div>
-
-    <div class="relative z-10 bg-gray-100 dark:bg-gray-800 lg:rounded-lg overflow-hidden w-full max-w-5xl grid grid-cols-1 md:grid-cols-2">
-        <div class="p-8 flex flex-col justify-center">
+<div id="auth-content" class="relative flex items-center justify-center min-h-screen">
+    <div class="absolute w-full min-h-screen overlay backdrop-blur-sm"></div>
+    <div class="w-full  bg-gray-200/50 dark:bg-gray-800/50 rounded-3xl backdrop-blur-2xl max-w-{{ $this->getMaxWidth() ?? 'lg' }} ">
+        <div class="relative z-10 grid w-full max-w-5xl p-8 mx-auto overflow-hidden bg-gray-100 dark:bg-gray-900 lg:rounded-lg">
             <section class="grid auto-cols-fr gap-y-6">
                 <header class="flex flex-col items-center fi-simple-header">
                     <div class="flex justify-end w-full">
                         @include('theme-switcher')
                     </div>
+
+                    <a href="/">
+                        @include('banner')
+                    </a>
 
                     <h1 class="text-3xl font-bold tracking-tight text-center fi-simple-header-heading text-gray-950 dark:text-white">
                         @yield('heading', $this->getHeading())
@@ -27,17 +28,37 @@
                 </footer>
             </section>
         </div>
-
-        <div class="bg-white dark:bg-gray-900 min-h-fit flex items-center justify-center">
-            <div class="relative w-full max-w-xs min-h-[28em] flex flex-col items-center justify-center text-center">
-                <div class="w-52">
-                    {{-- @include('logo') --}}
-                </div>
-
-                @include('banner')
-            </div>
-        </div>
     </div>
-
-    <x-filament-actions::modals />
 </div>
+
+@push('styles')
+@stack('styles')
+<style>
+    #auth-content {
+        background-size: 100%;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    html:not(.dark) #auth-content {
+        background-image: url("{{ asset('assets/svg/layered-peak-light.svg') }}");
+    }
+
+    html.dark #auth-content {
+        background-image: url("{{ asset('assets/svg/layered-peak-dark.svg') }}");
+    }
+
+    html:not(.dark) .overlay {
+        background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(var(--primary-400), 0.5) 100%);
+    }
+
+    html.dark .overlay {
+        background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(var(--primary-600), 0.5) 100%);
+    }
+</style>
+@endpush
+
+@push('scripts')
+@stack('scripts')
+@endpush

@@ -1,5 +1,5 @@
-<div>
-    <header id="header" class="group">
+<div id="content">
+    <header id="header" class="transition-all group">
         <nav class="fixed z-20 w-full overflow-hidden border-b border-gray-100 dark:border-gray-900 backdrop-blur-2xl">
             <div class="max-w-6xl px-6 m-auto ">
                 <div class="flex flex-wrap items-center justify-between py-2 sm:py-4">
@@ -41,7 +41,7 @@
         </nav>
     </header>
 
-    <div id="home" class="opacity-0 -translate-y-10 transition-all duration-500">
+    <div id="home" class="transition-all duration-500 -translate-y-10 opacity-0">
         <main class="overflow-hidden">
             <section class="relative">
                 <div class="relative pt-24 lg:pt-28">
@@ -88,7 +88,7 @@
                                                 100%
                                             </span>
                                         </div>
-                                        <h2 class="mt-6 text-3xl font-semibold text-center text-gray-800 dark:text-gray-50 transition group-hover:text-secondary-950">
+                                        <h2 class="mt-6 text-3xl font-semibold text-center text-gray-800 transition dark:text-gray-50 group-hover:text-secondary-950">
                                             Reliable
                                         </h2>
                                     </div>
@@ -115,7 +115,7 @@
                                         </div>
                                         <div class="relative z-10 mt-6 space-y-2 text-center">
                                             <h2 class="text-lg font-medium transition group-hover:text-secondary-950 dark:text-white">Secure by default</h2>
-                                            <p class="text-gray-700 dark:text-gray-300 transition">
+                                            <p class="text-gray-700 transition dark:text-gray-300">
                                                 The security of your data is our top priority. Helpdesk is designed to be secure by default, with built-in security features that protect your data and keep it safe.
                                             </p>
                                         </div>
@@ -132,7 +132,7 @@
                                         </div>
                                         <div class="relative z-10 mt-6 space-y-2 text-center">
                                             <h2 class="text-lg font-medium transition group-hover:text-secondary-950"></h2>
-                                            <p class="text-gray-700 dark:text-gray-300 transition">
+                                            <p class="text-gray-700 transition dark:text-gray-300">
                                                 Stay organized and in control — our system streamlines every request, so nothing falls through the cracks.
                                             </p>
                                         </div>
@@ -148,7 +148,7 @@
                                              </div>
                                             <div class="space-y-2">
                                                 <h2 class="text-lg font-medium text-gray-800 transition group-hover:text-secondary-950 dark:text-white">Unbreakable Workflow</h2>
-                                                <p class="text-gray-700 dark:text-gray-300 transition">
+                                                <p class="text-gray-700 transition dark:text-gray-300">
                                                     No bottlenecks, no disruptions.
                                                     A system designed to keep your requests moving forward.
                                                 </p>
@@ -197,7 +197,7 @@
                                                     <span class="block px-2 py-1 text-xs text-gray-200 bg-gray-600 rounded-lg shadow-sm h-fit dark:bg-gray-300 dark:text-gray-700 ">
                                                         Submitted
                                                     </span>
-                                                    <div class="rounded-full size-7 ring-4 p-1 ring-gray-50 dark:ring-gray-950 bg-gray-50 dark:bg-gray-950">
+                                                    <div class="p-1 rounded-full size-7 ring-4 ring-gray-50 dark:ring-gray-950 bg-gray-50 dark:bg-gray-950">
                                                         <x-filament::icon
                                                             :icon="App\Enums\ActionStatus::SUBMITTED->getIcon()"
                                                             class="text-amber-500"
@@ -219,7 +219,7 @@
                                                     <span class="block px-2 py-1 text-xs text-gray-200 bg-gray-600 rounded-lg shadow-sm h-fit dark:bg-gray-300 dark:text-gray-700 ">
                                                         Assigned
                                                     </span>
-                                                    <div class="rounded-full size-7 p-1 ring-4 ring-gray-50 dark:ring-gray-950 bg-gray-50 dark:bg-gray-950">
+                                                    <div class="p-1 rounded-full size-7 ring-4 ring-gray-50 dark:ring-gray-950 bg-gray-50 dark:bg-gray-950">
                                                         <x-filament::icon
                                                             :icon="App\Enums\ActionStatus::ASSIGNED->getIcon()"
                                                             class="text-amber-500"
@@ -241,7 +241,7 @@
                                                     <span class="block px-2 py-1 text-xs text-gray-200 bg-gray-600 rounded-lg shadow-sm h-fit dark:bg-gray-300 dark:text-gray-700 ">
                                                         Resolved
                                                     </span>
-                                                    <div class="rounded-full size-7 p-1 ring-4 ring-gray-50 dark:ring-gray-950 bg-gray-50 dark:bg-gray-950">
+                                                    <div class="p-1 rounded-full size-7 ring-4 ring-gray-50 dark:ring-gray-950 bg-gray-50 dark:bg-gray-950">
                                                         <x-filament::icon
                                                             :icon="App\Enums\ActionStatus::RESOLVED->getIcon()"
                                                             class="text-amber-500"
@@ -385,18 +385,28 @@
                                     <x-filament::icon icon="si-filament" class="fill-amber-500" />
                                 </div>
                             </div>
-                            <div class="flex gap-3 mx-auto w-fit">
+                            <div class="flex gap-3 mx-auto mb-3 w-fit">
                                 <div class="border dark:border-gray-800 rounded-3xl flex relative *:relative *:size-9 *:m-auto size-20 mx-auto ">
                                     <x-filament::icon icon="si-tailwindcss" class="fill-amber-500" />
-                                </div>
-                                <div class="border dark:border-gray-800 rounded-3xl flex relative *:relative *:size-10 *:m-auto size-20 mx-auto ">
-                                    <x-filament::icon icon="si-mysql" class="fill-amber-500" />
                                 </div>
                                 <div class="border dark:border-gray-800 rounded-3xl flex relative *:relative *:size-7 *:m-auto size-20 mx-auto ">
                                     <x-filament::icon icon="si-nginx" class="fill-amber-500" />
                                 </div>
                                 <div class="border dark:border-gray-800 rounded-3xl flex relative *:relative *:size-7 *:m-auto size-20 mx-auto ">
                                     <x-filament::icon icon="si-docker" class="fill-amber-500" />
+                                </div>
+                            </div>
+                            <div class="flex gap-3 mx-auto mb-3 w-fit">
+                                <div class="border dark:border-gray-800 rounded-3xl flex relative *:relative *:size-10 *:m-auto size-20 mx-auto ">
+                                    <x-filament::icon icon="si-mysql" class="fill-amber-500" />
+                                </div>
+                                <div class="border dark:border-gray-800 rounded-3xl flex relative *:relative *:size-7 *:m-auto size-20 mx-auto ">
+                                    <x-filament::icon icon="si-sqlite" class="fill-amber-500" />
+                                </div>
+                            </div>
+                            <div class="flex gap-3 mx-auto mb-3 w-fit">
+                                <div class="border dark:border-gray-800 rounded-3xl flex relative *:relative *:size-8 *:m-auto size-20 mx-auto ">
+                                    <x-filament::icon icon="si-github" class="fill-amber-500" />
                                 </div>
                             </div>
                         </div>
