@@ -13,6 +13,7 @@ use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Support\Facades\FilamentView;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
@@ -118,6 +119,17 @@ trait NewRequest
                             }),
                         MarkdownEditor::make('body')
                             ->required()
+                            ->hintAction(
+                                \Filament\Forms\Components\Actions\Action::make('preview')
+                                    ->modalSubmitAction(false)
+                                    ->modalCancelActionLabel('Close')
+                                    ->infolist(fn ($state) => [
+                                        TextEntry::make('preview')
+                                            ->hiddenLabel()
+                                            ->state(fn () => $state)
+                                            ->markdown(),
+                                    ]),
+                            )
                             ->helperText(fn () => 'Provide detailed information about '.match ($classification) {
                                 RequestClass::INQUIRY => 'your question, specifying any necessary context for clarity.',
                                 RequestClass::SUGGESTION => 'your idea, explaining its benefits and potential impact.',

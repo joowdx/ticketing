@@ -2,10 +2,14 @@
 
 namespace App\Providers;
 
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Livewire\Notifications;
 use Filament\Support\Enums\Alignment;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Support\Enums\VerticalAlignment;
 use Filament\Support\Facades\FilamentView;
 use Filament\Tables\Filters\SelectFilter;
@@ -47,7 +51,7 @@ class AppServiceProvider extends ServiceProvider
 
         FilamentView::registerRenderHook(PanelsRenderHook::TOPBAR_END, fn () => Blade::render('</div>'));
 
-        FilamentView::registerRenderHook(PanelsRenderHook::HEAD_START, fn () => Blade::render('<style>nav{padding:0!important;}</style>'));
+        FilamentView::registerRenderHook(PanelsRenderHook::HEAD_START, fn () => Blade::render('<style>.fi-topbar>nav{padding:0!important;}</style>'));
 
         Notifications::verticalAlignment(VerticalAlignment::End);
 
@@ -61,6 +65,25 @@ class AppServiceProvider extends ServiceProvider
                         return $model->trashed() ? 'bg-gray-100 dark:bg-gray-800' : null;
                     }
                 });
+        });
+
+        MarkdownEditor::configureUsing(function (MarkdownEditor $markdownEditor) {
+            $markdownEditor->disableToolbarButtons(['attachFiles', 'codeBlock'])
+                ->enableToolbarButtons(['h2'])
+                ->hintAction(
+                    Action::make('preview')
+                        ->modalHeading(fn (MarkdownEditor $component) => "Preview {$component->getLabel()}")
+                        ->modalSubmitAction(false)
+                        ->modalCancelActionLabel('Close')
+                        ->modalFooterActionsAlignment(Alignment::End)
+                        ->modalWidth(MaxWidth::ExtraLarge)
+                        ->infolist(fn ($state) => [
+                            TextEntry::make('preview')
+                                ->hiddenLabel()
+                                ->state(str($state ?? '')->markdown()->toHtmlString())
+                                ->markdown(),
+                        ]),
+                );
         });
 
         TextInput::configureUsing(fn (TextInput $input) => $input->maxLength(255));
@@ -89,5 +112,7 @@ class AppServiceProvider extends ServiceProvider
                 ]);
             });
         }
+
+        $this->app->bind(\Filament\Http\Responses\Auth\Contracts\LogoutResponse::class, \App\Http\Responses\LogoutResponse::class);
     }
 }

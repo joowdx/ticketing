@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\ActionStatus;
 use App\Enums\RequestClass;
 use App\Models\Concerns\HasManyAttachmentsThroughActions;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -44,16 +43,16 @@ class Request extends Model
     {
         static::forceDeleting(fn (self $request) => $request->purge());
 
-        static::saving(function (self $request) {
-            $request->tags()->sync(
-                $request->tags()
-                    ->where(function (Builder $query) use ($request) {
-                        $query->orWhere(fn ($query) => $query->where('taggable_type', Subcategory::class)->where('taggable_id', $request->subcategory_id));
+        static::creating(function (self $request) {
+            $faker = fake();
 
-                        $query->orWhere(fn ($query) => $query->where('taggable_type', Category::class)->where('taggable_id', $request->category_id));
-                    })
-                    ->pluck('tags.id')
-            );
+            do {
+                $codes = collect(range(1, 10))->map(fn () => $faker->bothify('??????####'))->toArray();
+
+                $available = array_diff($codes, self::whereIn('code', $codes)->pluck('code')->toArray());
+            } while (empty($available));
+
+            $request->code = reset($available);
         });
     }
 

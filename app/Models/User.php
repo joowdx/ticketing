@@ -138,9 +138,9 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
         return $query->where('role', UserRole::USER);
     }
 
-    public function scopeSupport(Builder $query): Builder
+    public function scopeAgent(Builder $query): Builder
     {
-        return $query->where('role', UserRole::SUPPORT);
+        return $query->where('role', UserRole::AGENT);
     }
 
     public function scopeModerator(Builder $query): Builder

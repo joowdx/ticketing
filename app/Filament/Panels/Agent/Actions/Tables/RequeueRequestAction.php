@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Panels\Support\Actions\Tables;
+namespace App\Filament\Panels\Agent\Actions\Tables;
 
 use App\Enums\ActionStatus;
 use App\Models\Request;
@@ -42,7 +42,7 @@ class RequeueRequestAction extends Action
 
             $request->assignees()->detach(Auth::id());
 
-            $request->actions()->create()->update([
+            $request->actions()->create([
                 'remarks' => $data['remarks'],
                 'status' => ActionStatus::QUEUED,
                 'user_id' => Auth::id(),

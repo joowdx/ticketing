@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Subcategory extends Model
 {
-    use HasUlids, SoftDeletes;
+    use HasFactory, HasUlids, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -27,7 +28,7 @@ class Subcategory extends Model
         });
 
         static::addGlobalScope('subcategory_order', function (Builder $query) {
-            $query->orderByRaw("CASE WHEN name like 'others' THEN 1 ELSE 0 END")
+            $query->orderByRaw("CASE WHEN subcategories.name like 'others' THEN 1 ELSE 0 END")
                 ->orderBy('name');
         });
     }

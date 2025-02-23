@@ -27,11 +27,12 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'role' => fake()->randomElement(UserRole::cases()),
+            'role' => fake()->randomElement(array_filter(UserRole::cases(), fn ($role) => $role !== UserRole::ROOT)),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'verified_at' => $verified = fake()->boolean(60) ? now() : null,
-            'approved_at' => $verified ? (fake()->boolean(60) ? $verified : null) : null,
+            'approved_at' => $approved = $verified ? (fake()->boolean(60) ? $verified : null) : null,
+            'deactivated_at' => $approved ? (fake()->boolean(15) ? $verified : null) : null,
         ];
     }
 

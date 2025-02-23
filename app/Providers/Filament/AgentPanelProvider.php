@@ -22,20 +22,21 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-class SupportPanelProvider extends PanelProvider
+class AgentPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->id('support')
-            ->path('support')
+            ->id('agent')
+            ->path('agent')
             ->homeUrl('/')
             ->brandLogo(fn () => view('banner'))
             ->font('Urbanist')
             ->colors([...Color::all(), 'gray' => Color::Neutral])
-            ->discoverResources(in: app_path('Filament/Panels/Support/Resources'), for: 'App\\Filament\\Panels\\Support\\Resources')
-            ->discoverPages(in: app_path('Filament/Panels/Support/Pages'), for: 'App\\Filament\\Panels\\Support\\Pages')
-            ->discoverWidgets(in: app_path('Filament/Panels/Support/Widgets'), for: 'App\\Filament\\Panels\\Support\\Widgets')
+            ->discoverResources(in: app_path('Filament/Panels/Agent/Resources'), for: 'App\\Filament\\Panels\\Agent\\Resources')
+            ->discoverPages(in: app_path('Filament/Panels/Agent/Pages'), for: 'App\\Filament\\Panels\\Agent\\Pages')
+            ->discoverWidgets(in: app_path('Filament/Panels/Agent/Widgets'), for: 'App\\Filament\\Panels\\Agent\\Widgets')
+            ->discoverClusters(in: app_path('Filament/Panels/Agent/Clusters'), for: 'App\\Filament\\Panels\\Agent\\Clusters')
             ->pages([Pages\Dashboard::class])
             ->widgets([
                 Widgets\AccountWidget::class,
@@ -58,6 +59,7 @@ class SupportPanelProvider extends PanelProvider
                 Approve::class,
                 Active::class,
             ])
+            ->globalSearch(false)
             ->maxContentWidth(MaxWidth::ScreenTwoExtraLarge)
             ->databaseTransactions()
             ->topNavigation()

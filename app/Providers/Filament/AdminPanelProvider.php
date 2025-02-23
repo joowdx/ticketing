@@ -59,6 +59,7 @@ class AdminPanelProvider extends PanelProvider
                 Approve::class,
                 Active::class,
             ])
+            ->globalSearch(false)
             ->maxContentWidth(MaxWidth::ScreenTwoExtraLarge)
             ->databaseTransactions()
             ->topNavigation()

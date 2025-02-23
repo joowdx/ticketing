@@ -31,6 +31,11 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
     case COMPLIED = 'complied';
     case VERIFIED = 'verified';
     case DENIED = 'denied';
+    case CLOSED = 'closed';
+    case RECLASSIFIED = 'reclassified';
+    case RESPONDED = 'responded';
+
+    case IN_PROGRESS = 'in_progress'; // Placeholder only
 
     public static function allowedTransitions(): array
     {
@@ -54,6 +59,13 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
                 self::COMPLETED,
                 self::SUSPENDED,
             ],
+            self::SUSPENDED->value => [
+                self::COMPLIED,
+            ],
+            self::COMPLIED->value => [
+                self::SUSPENDED,
+                self::COMPLETED,
+            ],
         ];
     }
 
@@ -65,7 +77,7 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
     public static function majorActions(): array
     {
         return array_filter(self::cases(), fn ($case) => in_array($case->value, [
-            self::STALE->value,
+            self::SUBMITTED->value,
             self::QUEUED->value,
             self::ASSIGNED->value,
             self::APPROVED->value,
@@ -74,10 +86,13 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
             self::CANCELLED->value,
             self::STARTED->value,
             self::SUSPENDED->value,
-            self::SUBMITTED->value,
             self::RETRACTED->value,
             self::RESOLVED->value,
             self::DENIED->value,
+            self::CLOSED->value,
+            self::REJECTED->value,
+            self::RESPONDED->value,
+            self::STALE->value,
         ], true));
     }
 
@@ -108,7 +123,8 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
             self::RESOLVED,
             self::SCHEDULED => 'info',
             self::COMPLIED => 'warning',
-            self::DENIED => 'danger',
+            self::DENIED,
+            self::CLOSED => 'danger',
             default => 'gray'
         };
     }
@@ -159,12 +175,23 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
             self::SCHEDULED => 'gmdi-event-o',
             self::COMPLIED => 'gmdi-task-r',
             self::DENIED => 'gmdi-do-not-disturb-on-total-silence',
+            self::RECLASSIFIED => 'gmdi-swap-horizontal-circle-o',
+            self::CLOSED => 'gmdi-cancel-o',
+            self::RESPONDED => 'gmdi-chat-o',
+            self::IN_PROGRESS => 'gmdi-sync-o',
             default => 'gmdi-circle-o',
         };
     }
 
     public function getLabel(?string $type = null, ?bool $capitalize = true): ?string
     {
+        if (in_array($this, [self::IN_PROGRESS], true)) {
+            return match ($this) {
+                self::IN_PROGRESS => 'In Progress',
+                default => null,
+            };
+        }
+
         $label = match ($type) {
             'nounForm' => match ($this->value) {
                 'updated' => 'update',
@@ -185,7 +212,8 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
                 'verified' => 'verification',
                 'denied' => 'denial',
                 'ammended' => 'alter',
-                'surveyed' => 'surveying',
+                'responded' => 'response',
+                'reclassified' => 'reclassification',
                 default => $this->value,
             },
             'presentTense' => match ($this->value) {
@@ -209,5 +237,16 @@ enum ActionStatus: string implements HasColor, HasDescription, HasIcon, HasLabel
     public function minor()
     {
         return in_array($this, self::minorActions(), true);
+    }
+
+    public function finalized()
+    {
+        return in_array($this, [
+            self::COMPLETED,
+            self::CANCELLED,
+            self::CLOSED,
+            self::DENIED,
+            self::REJECTED,
+        ], true);
     }
 }

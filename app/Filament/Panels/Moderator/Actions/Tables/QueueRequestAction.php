@@ -28,7 +28,7 @@ class QueueRequestAction extends Action
                 return;
             }
 
-            $request->actions()->create()->update([
+            $request->actions()->create([
                 'status' => ActionStatus::QUEUED,
                 'user_id' => Auth::id(),
             ]);

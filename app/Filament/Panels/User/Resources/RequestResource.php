@@ -2,7 +2,9 @@
 
 namespace App\Filament\Panels\User\Resources;
 
+use App\Enums\ActionStatus;
 use App\Filament\Actions\Tables\DeleteRequestAction;
+use App\Filament\Actions\Tables\RespondRequestAction;
 use App\Filament\Actions\Tables\RestoreRequestAction;
 use App\Filament\Actions\Tables\ResubmitRequestAction;
 use App\Filament\Actions\Tables\RetractRequestAction;
@@ -30,6 +32,9 @@ class RequestResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('code')
+                    ->extraCellAttributes(['class' => 'font-mono'])
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('subject')
                     ->sortable()
                     ->searchable()
@@ -48,7 +53,13 @@ class RequestResource extends Resource
                 Tables\Columns\TextColumn::make('action.status')
                     ->label('Status')
                     ->badge()
-                    ->alignEnd(),
+                    ->alignEnd()
+                    ->state(function (Request $request) {
+                        return match ($request->action->status) {
+                            ActionStatus::RESPONDED => ActionStatus::IN_PROGRESS,
+                            default => $request->action->status,
+                        };
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->since()
                     ->dateTimeTooltip()
@@ -62,6 +73,7 @@ class RequestResource extends Resource
                     ->label('Deleted'),
             ])
             ->actions([
+                RespondRequestAction::make(),
                 ResubmitRequestAction::make()
                     ->label('Resubmit'),
                 ShowRequestAction::make()

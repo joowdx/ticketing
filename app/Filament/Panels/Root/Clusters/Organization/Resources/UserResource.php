@@ -146,7 +146,8 @@ class UserResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                OfficeFilter::make(),
+                OfficeFilter::make()
+                    ->label('Affiliated office'),
                 RoleFilter::make(),
                 Tables\Filters\TrashedFilter::make(),
             ])

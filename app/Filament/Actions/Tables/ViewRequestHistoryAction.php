@@ -13,6 +13,8 @@ class ViewRequestHistoryAction extends Action
 
         $this->name('view-request-history');
 
+        $this->label('History');
+
         $this->icon('gmdi-route-o');
 
         $this->slideOver();

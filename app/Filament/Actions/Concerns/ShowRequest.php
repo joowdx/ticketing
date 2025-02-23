@@ -23,7 +23,7 @@ trait ShowRequest
 
         $this->modalHeading(fn (Request $request) => $request->subject);
 
-        $this->modalDescription(fn (Request $request) => "{$request->user->name} {$request->created_at->diffForHumans()} ({$request->created_at->format('F j, Y H:i')})");
+        $this->modalDescription(fn (Request $request) => "{$request->user?->name} {$request->created_at->diffForHumans()} ({$request->created_at->format('F j, Y H:i')})");
 
         $this->modalFooterActionsAlignment(Alignment::End);
 

@@ -9,7 +9,7 @@ enum UserRole: string implements HasLabel
     case ROOT = 'root';
     case ADMIN = 'admin';
     case MODERATOR = 'moderator';
-    case SUPPORT = 'support';
+    case AGENT = 'agent';
     case USER = 'user';
 
     public function getLabel(): ?string

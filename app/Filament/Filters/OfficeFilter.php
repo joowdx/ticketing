@@ -55,7 +55,7 @@ class OfficeFilter extends Filter
                 case false:
                     $office = $data['office'];
 
-                    $query->when($office, fn ($query, $office) => $query->where('office_id', $office !== -1 ? $office : null));
+                    $query->when($office, fn ($query, $office) => $query->where('office_id', (int) $office !== -1 ? $office : null));
 
                     break;
             }

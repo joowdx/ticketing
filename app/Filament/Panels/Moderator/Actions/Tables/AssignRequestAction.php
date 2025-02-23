@@ -3,6 +3,7 @@
 namespace App\Filament\Panels\Moderator\Actions\Tables;
 
 use App\Enums\ActionStatus;
+use App\Enums\RequestClass;
 use App\Models\Request;
 use App\Models\User;
 use Exception;
@@ -34,11 +35,11 @@ class AssignRequestAction extends Action
 
         $this->modalDescription('Please select support users to assign this request to.');
 
-        $this->modalContent(fn (Request $request) => $request->office->users()->support()->doesntExist() ? str('No support users found')->toHtmlString() : null);
+        $this->modalContent(fn (Request $request) => $request->office->users()->agent()->doesntExist() ? str('No support users found')->toHtmlString() : null);
 
         $this->modalWidth(MaxWidth::ExtraLarge);
 
-        $this->modalSubmitAction(fn (Request $request) => $request->office->users()->support()->exists() ? null : false);
+        $this->modalSubmitAction(fn (Request $request) => $request->office->users()->agent()->exists() ? null : false);
 
         $this->modalSubmitActionLabel('Assign');
 
@@ -49,7 +50,7 @@ class AssignRequestAction extends Action
             'assignees' => $request->assignees->pluck('id')->toArray(),
         ]);
 
-        $this->form(fn (Request $request) => $request->office->users()->support()->exists() ? [
+        $this->form(fn (Request $request) => $request->office->users()->agent()->exists() ? [
             Toggle::make('declination')
                 ->label('Allow declination')
                 ->helperText('Allow assignees to have the option to decline the assignment')
@@ -59,8 +60,8 @@ class AssignRequestAction extends Action
                 ->required()
                 ->searchable()
                 ->exists('users', 'id')
-                ->options($request->office->users()->support()->pluck('name', 'id')->toArray())
-                ->descriptions($request->office->users()->support()->pluck('designation', 'id')->toArray()),
+                ->options($request->office->users()->agent()->pluck('name', 'id')->toArray())
+                ->descriptions($request->office->users()->agent()->pluck('designation', 'id')->toArray()),
         ] : []);
 
         $this->action(function (Request $request, array $data) {
@@ -118,6 +119,12 @@ class AssignRequestAction extends Action
             }
         });
 
-        $this->visible(fn (Request $request) => in_array($request->action->status, [ActionStatus::QUEUED, ActionStatus::ASSIGNED]));
+        $this->visible(function (Request $request) {
+            return match($request->class) {
+                RequestClass::TICKET => in_array($request->action->status, [ActionStatus::QUEUED, ActionStatus::ASSIGNED]),
+                RequestClass::INQUIRY => in_array($request->action->status, [ActionStatus::RESPONDED, ActionStatus::SUBMITTED, ActionStatus::ASSIGNED]),
+                default => false,
+            };
+        });
     }
 }
