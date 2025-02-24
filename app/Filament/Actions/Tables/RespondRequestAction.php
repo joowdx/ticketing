@@ -33,6 +33,15 @@ class RespondRequestAction extends Action
 
         $this->modalWidth(MaxWidth::ExtraLarge);
 
+        $this->successNotificationTitle(function (Request $request) {
+            $pronoun = match(Filament::getCurrentPanel()->getId()) {
+                'user' => 'your',
+                default => 'the',
+            };
+
+            return 'You have responded to '.$pronoun.' inquiry <span class="font-mono">#'.$request->code.'</span>';
+        });
+
         $this->form(fn (Request $request) => [
             MarkdownEditor::make('response')
                 ->label('Message')
@@ -44,7 +53,10 @@ class RespondRequestAction extends Action
                     'chat' => true,
                 ])),
             Placeholder::make('inquiry')
-                ->content(str($request->body)->markdown()->toHtmlString()),
+                ->content(view('filament.requests.action', [
+                    'content' => $request->body,
+                    'chat' => true,
+                ])),
         ]);
 
         $this->action(function (Request $request, array $data) {
@@ -56,6 +68,8 @@ class RespondRequestAction extends Action
                     'status' => ActionStatus::RESPONDED,
                     'user_id' => Auth::id(),
                 ]);
+
+                $this->success();
 
                 $this->commitDatabaseTransaction();
             } catch (Exception $e) {

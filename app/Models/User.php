@@ -138,9 +138,15 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
         return $query->where('role', UserRole::USER);
     }
 
-    public function scopeAgent(Builder $query): Builder
+    public function scopeAgent(Builder $query, bool $moderators = false, bool $admin = false): Builder
     {
-        return $query->where('role', UserRole::AGENT);
+        return $query->where(function ($query) use($moderators, $admin) {
+            $query->where('role', UserRole::AGENT);
+
+            $query->when($moderators, fn ($query) => $query->orWhere('role', UserRole::MODERATOR));
+
+            $query->when($admin, fn ($query) => $query->orWhere('role', UserRole::ADMIN));
+        });
     }
 
     public function scopeModerator(Builder $query): Builder
@@ -156,6 +162,15 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
     public function scopeRoot(Builder $query): Builder
     {
         return $query->where('role', UserRole::ADMIN);
+    }
+
+    public function scopeSortByRole(Builder $query, bool $ascending = true): Builder
+    {
+        $roles = UserRole::cases();
+
+        $placeholders = implode(',', array_fill(0, count($roles), '?'));
+
+        return $query->orderByRaw("FIELD(role, {$placeholders}) ".($ascending ? 'ASC' : 'DESC'), $roles);
     }
 
     public function scopeForApproval(Builder $query): Builder
@@ -175,7 +190,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
 
     public function scopeApprovedAccount(Builder $query): Builder
     {
-        return $query->whereNotNull('approved_at');
+        return $query->verifiedEmail()->whereNotNull('approved_at');
     }
 
     public function reactivate(): void

@@ -27,6 +27,7 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
+            'designation' => fake()->jobTitle(),
             'role' => fake()->randomElement(array_filter(UserRole::cases(), fn ($role) => $role !== UserRole::ROOT)),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),

@@ -2,8 +2,10 @@
 
 namespace App\Filament\Actions\Concerns;
 
+use App\Enums\RequestClass;
 use App\Models\Request;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\MaxWidth;
 
@@ -33,11 +35,21 @@ trait ShowRequest
 
         $this->modalWidth(MaxWidth::ExtraLarge);
 
-        $this->infolist([
-            TextEntry::make('body')
-                ->hiddenLabel()
-                ->getStateUsing(fn (Request $request) => str($request->body)->markdown()->toHtmlString())
-                ->markdown(),
+        $this->infolist(fn (Request $request) => [
+            ViewEntry::make('body')
+                ->label('Inquiry')
+                ->hiddenLabel(false)
+                ->view('filament.requests.action', [
+                    'content' => $request->body,
+                    'chat' => true,
+                ]),
+            ViewEntry::make('responses')
+                ->visible($request->class === RequestClass::INQUIRY)
+                ->view('filament.requests.history', [
+                    'request' => $request,
+                    'chat' => true,
+                    'descending' => false,
+                ]),
         ]);
 
         $this->hidden(fn (Request $request) => $request->trashed());

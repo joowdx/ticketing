@@ -26,8 +26,6 @@ class StartRequestAction extends Action
 
         $this->modalDescription('Start this request to begin processing. Once started, the request will be marked as in progress.');
 
-        $this->visible(fn (Request $request) => $request->class === RequestClass::TICKET && ! $request->action->status->finalized());
-
         $this->action(function (Request $request) {
             if ($request->action->status === ActionStatus::STARTED) {
                 return;
@@ -37,6 +35,17 @@ class StartRequestAction extends Action
                 'status' => ActionStatus::STARTED,
                 'user_id' => Auth::id(),
             ]);
+        });
+
+        $this->visible(function (Request $request) {
+            if ($request->action->status->finalized() || $request->action->status === ActionStatus::STARTED) {
+                return false;
+            }
+
+            return match($request->class) {
+                RequestClass::TICKET => $request->assignees->contains(Auth::user()),
+                default => false,
+            };
         });
     }
 }

@@ -10,6 +10,8 @@ use App\Filament\Actions\Tables\ViewRequestHistoryAction;
 use App\Filament\Clusters\Requests\Resources\RequestResource\Pages\ListTickets;
 use App\Filament\Panels\Agent\Actions\Tables\RequeueRequestAction;
 use App\Filament\Panels\Agent\Actions\Tables\StartRequestAction;
+use App\Filament\Panels\Moderator\Actions\Tables\AssignRequestAction;
+use App\Filament\Panels\Moderator\Actions\Tables\QueueRequestAction;
 use Filament\Facades\Filament;
 use Filament\Tables\Actions\ActionGroup;
 
@@ -46,7 +48,9 @@ class TicketResource extends RequestResource
             'moderator' => [
                 ShowRequestAction::make(),
                 StartRequestAction::make(),
+                AssignRequestAction::make(),
                 RequeueRequestAction::make(),
+                QueueRequestAction::make(),
                 ViewRequestHistoryAction::make(),
                 ActionGroup::make([
                     ReclassifyRequestAction::make(),

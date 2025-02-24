@@ -50,7 +50,7 @@ class AssignRequestAction extends Action
             'assignees' => $request->assignees->pluck('id')->toArray(),
         ]);
 
-        $this->form(fn (Request $request) => $request->office->users()->agent()->exists() ? [
+        $this->form(fn (Request $request) => $request->office->users()->agent(moderators: true)->approvedAccount()->exists() ? [
             Toggle::make('declination')
                 ->label('Allow declination')
                 ->helperText('Allow assignees to have the option to decline the assignment')
@@ -60,8 +60,16 @@ class AssignRequestAction extends Action
                 ->required()
                 ->searchable()
                 ->exists('users', 'id')
-                ->options($request->office->users()->agent()->pluck('name', 'id')->toArray())
-                ->descriptions($request->office->users()->agent()->pluck('designation', 'id')->toArray()),
+                ->options(
+                    $request->office->users()
+                        ->agent(moderators: true)
+                        ->approvedAccount()
+                        ->sortByRole(false)
+                        ->get(['id', 'name', 'role'])
+                        ->mapWithKeys(fn ($user) => [$user->id => "{$user->name} ({$user->role->getLabel()})"])
+                        ->toArray()
+                )
+                ->descriptions($request->office->users()->agent(moderators: true)->approvedAccount()->pluck('designation', 'id')->toArray()),
         ] : []);
 
         $this->action(function (Request $request, array $data) {

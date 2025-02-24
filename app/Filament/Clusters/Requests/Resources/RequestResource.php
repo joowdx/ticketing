@@ -55,7 +55,7 @@ class RequestResource extends Resource
                     ->alignEnd()
                     ->state(function (Request $request) {
                         return match ($request->action->status) {
-                            ActionStatus::RESPONDED => ActionStatus::IN_PROGRESS,
+                            ActionStatus::RESPONDED, ActionStatus::STARTED => ActionStatus::IN_PROGRESS,
                             default => $request->action->status,
                         };
                     }),
